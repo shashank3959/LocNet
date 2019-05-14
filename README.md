@@ -1,6 +1,9 @@
 # LocNet
 Unsupervised Co-localization of Text and Images
 
+![55680967-7038be00-58e6-11e9-9015-8afc9aa5b781](https://user-images.githubusercontent.com/19747416/57676276-27190f80-75f2-11e9-8571-8a50583c8673.png)
+
+
 ## Preprocessing Steps
 
 - Create a vocabulary of the dataset being used
