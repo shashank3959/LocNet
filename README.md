@@ -10,6 +10,4 @@ Unsupervised Co-localization of Text and Images
 ## Steps
 
 - Explore args in main.py
-- ```python
-python .\main.py
-```
+- run ``` python .\main.py ```
