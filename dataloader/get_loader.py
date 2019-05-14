@@ -11,7 +11,7 @@ def get_loader_coco(transform,
                unk_word="<unk>",
                num_workers=4,
                cocoapi_loc="",
-               vocab_glove_file="data/vocab_glove.json",
+               vocab_glove_file="data/mscoco/vocab_glove.json",
                fetch_mode='default',
                data_mode='default',
                disp_mode='default',
@@ -41,15 +41,15 @@ def get_loader_coco(transform,
     assert mode in ["train", "val", "test"], "mode must be one of 'train', 'val' or 'test'."
     # Based on mode (train, val, test), obtain img_folder and annotations_file
     if mode == "train":
-        img_folder = os.path.join(cocoapi_loc, "data/images/train2014/")
-        annotations_file = os.path.join(cocoapi_loc, "data/annotations/captions_train2014.json")
+        img_folder = os.path.join(cocoapi_loc, "data/mscoco/images/train2014/")
+        annotations_file = os.path.join(cocoapi_loc, "data/mscoco/annotations/captions_train2014.json")
     if mode == "val":
-        img_folder = os.path.join(cocoapi_loc, "data/images/val2014/")
-        annotations_file = os.path.join(cocoapi_loc, "data/annotations/captions_val2014.json")
+        img_folder = os.path.join(cocoapi_loc, "data/mscoco/images/val2014/")
+        annotations_file = os.path.join(cocoapi_loc, "data/mscoco/annotations/captions_val2014.json")
     if mode == "test":
         assert batch_size == 1, "Please change batch_size to 1 if testing your model."
-        img_folder = os.path.join(cocoapi_loc, "data/images/test2014/")
-        annotations_file = os.path.join(cocoapi_loc, "data/annotations/image_info_test2014.json")
+        img_folder = os.path.join(cocoapi_loc, "data/mscoco/images/test2014/")
+        annotations_file = os.path.join(cocoapi_loc, "data/mscoco/annotations/image_info_test2014.json")
 
     # COCO caption dataset
     dataset = CoCoDataset(transform=transform,
