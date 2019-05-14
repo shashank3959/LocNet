@@ -55,6 +55,8 @@ class Flickr30kData(data.Dataset):
         self.disp_mode = disp_mode
         self.num_test = num_test
 
+
+
         if self.mode == "test":
             fold_file = self.test_fold
         elif self.mode == "train":

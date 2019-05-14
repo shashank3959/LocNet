@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b6c81ca5-0cf3-4c3c-947b-fef84e9f39bd" name="Default Changelist" comment="" />
+    <list default="true" id="b6c81ca5-0cf3-4c3c-947b-fef84e9f39bd" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataloader/flickr_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataloader/flickr_loader.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -9,73 +12,32 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.8745583">
-      <split-first>
-        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/dataloader/__init__.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state>
-                  <caret column="25" selection-start-column="25" selection-end-column="25" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/steps/__init__.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="20">
-                  <caret line="1" column="27" selection-start-line="1" selection-start-column="27" selection-end-line="1" selection-end-column="27" />
-                  <folding>
-                    <element signature="e#0#20#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/dataloader/coco_loader.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1640">
-                  <caret line="35" selection-start-line="35" selection-end-line="35" />
-                  <folding>
-                    <element signature="e#54#65#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/main.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-1959">
-                  <caret line="108" lean-forward="true" selection-start-line="108" selection-end-line="108" />
-                  <folding>
-                    <element signature="e#0#15#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/dataloader/get_loader.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="280">
-                  <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
-                  <folding>
-                    <element signature="e#0#9#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dataloader/coco_loader.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1240">
+              <caret line="62" column="24" selection-start-line="62" selection-start-column="13" selection-end-line="62" selection-end-column="24" />
+              <folding>
+                <element signature="e#54#65#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/dataloader/flickr_loader.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-180">
+              <caret line="57" selection-start-line="57" selection-end-line="57" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -98,7 +60,11 @@
       <find>get_imgindices</find>
       <find>vocab_threshold</find>
       <find>vocab</find>
+      <find>vocab_glove</find>
     </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -119,46 +85,54 @@
         <option value="$PROJECT_DIR$/steps/__init__.py" />
         <option value="$PROJECT_DIR$/steps/models_train.py" />
         <option value="$PROJECT_DIR$/dataloader/coco_loader.py" />
-        <option value="$PROJECT_DIR$/dataloader/get_loader.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/dataloader/get_loader.py" />
+        <option value="$PROJECT_DIR$/dataloader/flickr_loader.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="952" />
-    <option name="width" value="977" />
-    <option name="height" value="1038" />
+    <option name="x" value="950" />
+    <option name="width" value="979" />
+    <option name="height" value="1040" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="UnsupervisedTextGrounding" type="b2602c69:ProjectViewProjectNode" />
-              <item name="UnsupervisedTextGrounding" type="462c0819:PsiDirectoryNode" />
+              <item name="LocNet" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LocNet" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="UnsupervisedTextGrounding" type="b2602c69:ProjectViewProjectNode" />
-              <item name="UnsupervisedTextGrounding" type="462c0819:PsiDirectoryNode" />
+              <item name="LocNet" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LocNet" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LocNet" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LocNet" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+              <item name="flickr_30kentities" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LocNet" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LocNet" type="462c0819:PsiDirectoryNode" />
               <item name="dataloader" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="UnsupervisedTextGrounding" type="b2602c69:ProjectViewProjectNode" />
-              <item name="UnsupervisedTextGrounding" type="462c0819:PsiDirectoryNode" />
-              <item name="steps" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
@@ -194,10 +168,9 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="7" />
-    <editor active="true" />
+    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25329816" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.176781" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -208,7 +181,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.042194095" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.042194095" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -250,15 +223,7 @@
     <entry file="file://$PROJECT_DIR$/scripts/models.py" />
     <entry file="file://$PROJECT_DIR$/scripts/models_train.py" />
     <entry file="file://$PROJECT_DIR$/models.py" />
-    <entry file="file://$PROJECT_DIR$/tools/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/tools/utils.py" />
     <entry file="file://$PROJECT_DIR$/misc/flickr30k_entities_utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1939">
@@ -282,16 +247,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tools/coco_dataloader.py" />
-    <entry file="file://$PROJECT_DIR$/dataloader/data_loader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4121">
-          <caret line="223" column="45" lean-forward="true" selection-start-line="223" selection-start-column="45" selection-end-line="223" selection-end-column="45" />
-          <folding>
-            <element signature="e#54#65#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -299,16 +254,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models_train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-120">
-          <caret line="6" column="25" lean-forward="true" selection-start-line="6" selection-start-column="25" selection-end-line="6" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/models_train.py" />
     <entry file="file://$PROJECT_DIR$/misc/flickr_vocabulary.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -365,26 +311,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dataloader/coco_loader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1640">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
-          <folding>
-            <element signature="e#54#65#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dataloader/get_loader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/steps/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="20">
@@ -397,10 +323,50 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1959">
-          <caret line="108" lean-forward="true" selection-start-line="108" selection-end-line="108" />
+        <state relative-caret-position="1180">
+          <caret line="178" column="73" selection-start-line="178" selection-start-column="73" selection-end-line="178" selection-end-column="73" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataloader/get_loader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="62" column="27" selection-start-line="62" selection-start-column="27" selection-end-line="62" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataloader/data_loader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="9" selection-start-column="9" selection-end-column="9" />
+          <folding>
+            <element signature="e#54#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataloader/coco_loader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1240">
+          <caret line="62" column="24" selection-start-line="62" selection-start-column="13" selection-end-line="62" selection-end-column="24" />
+          <folding>
+            <element signature="e#54#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dataloader/flickr_loader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-180">
+          <caret line="57" selection-start-line="57" selection-end-line="57" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
