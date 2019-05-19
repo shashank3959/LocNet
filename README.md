@@ -12,12 +12,23 @@ Unsupervised Co-localization of Text and Images
 
 ## Data Folder Structure
 
+This structure is after the flickr data shuffler script is run. 
 ```bash
+data
 ├───flickr_30kentities
 │   ├───annotations_flickr
 │   │   ├───Annotations
+│   │   │   ├───test
+│   │   │   ├───train
+│   │   │   └───val
 │   │   └───Sentences
+│   │       ├───test
+│   │       ├───train
+│   │       └───val
 │   └───flickr30k-images
+│       ├───test
+│       ├───train
+│       └───val
 └───mscoco
     ├───annotations
     ├───images
@@ -29,8 +40,8 @@ Unsupervised Co-localization of Text and Images
     └───v2_Questions_Val_mscoco
 ```
 
-
 ## Steps
 
+- If using flickr data, recommend running the flickr data shuffler script first.
 - Explore args in main.py
 - run ``` python .\main.py ```
