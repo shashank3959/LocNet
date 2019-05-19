@@ -2,6 +2,7 @@ import os
 import torch.utils.data as data
 
 from .coco_loader import CoCoDataset
+from .flickr_loader import FlickrDataset
 
 def get_loader_coco(transform,
                mode="train",
@@ -85,3 +86,27 @@ def get_loader_coco(transform,
                                       num_workers=num_workers)
 
     return data_loader
+
+
+
+
+def get_loader_flickr(transform,
+               mode="train",
+               batch_size=1,
+               start_word="<start>",
+               end_word="<end>",
+               unk_word="<unk>",
+               num_workers=4,
+               flickr_loc="",
+               vocab_glove_file="data/flickr_30kentities/vocab_glove_flickr.json",
+               pad_caption=True):
+
+    image_root = os.path.join(flickr_loc, 'data', 'flickr_30kentities','flickr30k-images')
+    sentences_root = os.path.join(flickr_loc, 'data', 'flickr_30kentities', 'annotations_flickr', 'Sentences')
+    annotations_root = os.path.join(flickr_loc, 'data', 'flickr_30kentities', 'annotations_flickr', 'Annotations')
+
+
+    assert mode in ["train", "val", "test"], "mode must be one of 'train', 'val' or 'test'."
+
+
+
