@@ -8,6 +8,7 @@ import torch
 import math
 
 from dataloader import get_loader_coco
+from dataloader import get_loader_flickr
 
 from steps import adjust_learning_rate
 from steps.models_train import *
@@ -70,6 +71,11 @@ parser.add_argument("--cnn_model", type=str, default='vgg',
 parser.add_argument('--resume', default='', type=str,
                     help='path to latest checkpoint of best model (default: none)')
 
+parser.add_argument('--dataset', default='flickr', type=str,
+                    help='Which Dataset to use')
+
+parser.add_argument('--parse_mode', default='phrase', type=str,
+                    help='If its the flickr dataset, parsing mode needs to be specified.')
 
 def main(args):
     # Parsing command line arguments
@@ -103,13 +109,25 @@ def main(args):
                              (0.229, 0.224, 0.225))])
 
     # Obtain the data loader (from file). Note that it runs much faster than before!
-    data_loader_train = get_loader_coco(transform=transform,
-                                   mode='train',
-                                   batch_size=args.batch_size)
+    if args.dataset == 'flickr':
+        data_loader_train = get_loader_flickr(transform=transform,
+                                            mode='train',
+                                            batch_size=args.batch_size,
+                                            parse_mode=args.parse_mode)
 
-    data_loader_val = get_loader_coco(transform=transform,
-                                 mode='val',
-                                 batch_size=args.batch_size)
+        data_loader_val = get_loader_flickr(transform=transform,
+                                          mode='val',
+                                          batch_size=args.batch_size,
+                                          parse_mode=args.parse_mode)
+
+    else:
+        data_loader_train = get_loader_coco(transform=transform,
+                                       mode='train',
+                                       batch_size=args.batch_size)
+
+        data_loader_val = get_loader_coco(transform=transform,
+                                     mode='val',
+                                     batch_size=args.batch_size)
 
     # Load saved model
     start_epoch, best_loss = load_checkpoint(image_model, caption_model, args.resume)
