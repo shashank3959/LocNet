@@ -35,10 +35,10 @@ General Idea:
 
 class FlickrDataset(data.Dataset):
 
-    def __init__(self, transform, mode, batch_size, sentences_root, annotations_root,
-                 image_root, vocab_glove_file, start_word='<start>',
+    def __init__(self, transform, mode, batch_size, sentences_file, sentences_root,
+                 annotations_root, image_root, vocab_glove_file, start_word='<start>',
                  end_word='<end>', unk_word='<unk>', pad_caption=True,
-                 pad_limit=20, parse_mode='phrase', fold='train'):
+                 pad_limit=20, parse_mode='phrase'):
         self.transform = transform
         self.mode = mode
         self.batch_size = batch_size
@@ -52,10 +52,10 @@ class FlickrDataset(data.Dataset):
         self.pad_limit = pad_limit  # Limit for length of caption
         self.vocab_glove = json.load(open(vocab_glove_file, 'r'))
         # Assigning proper data based on fold
-        self.image_folder = os.path.join(image_root, self.mode)
-        self.sentences_folder = os.path.join(sentences_root, self.mode)
-        self.sentences_file = os.path.join(self.sentences_folder, 'data.json')
-        self.annotations_folder = os.path.join(annotations_root, self.mode)
+        self.image_folder = image_root
+        self.sentences_folder = sentences_root
+        self.sentences_file = sentences_file
+        self.annotations_folder = annotations_root
 
         # All sentences
         self.sentences = json.load(open(self.sentences_file, 'r'))
@@ -117,10 +117,6 @@ class FlickrDataset(data.Dataset):
                                            for item in caption])
 
             return image, caption_gloves, caption
-
-
-
-
 
     def get_glove(self, word):
         if word not in self.vocab_glove.keys():
