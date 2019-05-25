@@ -68,7 +68,7 @@ def get_loader_coco(transform,
                           disp_mode=disp_mode,
                           test_size=1000)
 
-    if mode == "train":
+    if dataset.pad_caption:
         # Randomly sample a caption length, and sample indices with that length.
         indices = dataset.get_indices()
         # Create and assign a batch sampler to retrieve a batch with the sampled indices.
@@ -139,7 +139,7 @@ def get_loader_flickr(transform,
                             unk_word=unk_word,
                             pad_limit=pad_limit)
 
-    if mode == "train":
+    if dataset.pad_caption:
         # Randomly sample a caption length, and sample indices with that length.
         indices = dataset.get_indices()
         # Create and assign a batch sampler to retrieve a batch with the sampled indices.
