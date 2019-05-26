@@ -10,7 +10,7 @@ import math
 from dataloader import get_loader_coco
 from dataloader import get_loader_flickr
 
-from steps import adjust_learning_rate
+from steps import *
 from steps.models_train import *
 from models import VGG19, LSTMBranch, ResNet50
 
@@ -110,6 +110,7 @@ def main(args):
 
     # Obtain the data loader (from file). Note that it runs much faster than before!
     if args.dataset == 'flickr':
+        print("Dataset being used: ", args.dataset)
         data_loader_train = get_loader_flickr(transform=transform,
                                             mode='train',
                                             batch_size=args.batch_size,
@@ -121,6 +122,7 @@ def main(args):
                                           parse_mode=args.parse_mode)
 
     else:
+        print("Dataset being used: ", args.dataset)
         data_loader_train = get_loader_coco(transform=transform,
                                        mode='train',
                                        batch_size=args.batch_size)
@@ -140,7 +142,7 @@ def main(args):
     # print("Total number of training steps are :", total_train_step)
 
     print("========================================================")
-    print("Number of epochs to train: ", args.n_epochs)
+    print("Total number of epochs to train: ", args.n_epochs)
     print("Loss Type: ", args.loss_type)
     if args.loss_type == 'triplet':
         print("Sampling strategy: ", args.sampler)
