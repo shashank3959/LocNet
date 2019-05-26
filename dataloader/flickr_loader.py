@@ -14,25 +14,6 @@ from collections import defaultdict
 
 from .flickr30k_entities_utils import *
 
-"""
-General Idea:
-- First segregate data into divisions
-- For train case, return:
-    - Image
-    - Tokenized Glove embeddings for each word
-    - Glove Embedding matrix for each phrase
-- For val case, return:
-    - Image
-    - Tokenized Glove embeddings for each word
-    - Glove Embedding matrix for each phrase.
-- For test case, return:
-    - Image
-    - Tokenized Glove embeddings for each word
-    - GLove embedding for each phrase
-    - BBOX coordinates for each phrase
-"""
-
-
 class FlickrDataset(data.Dataset):
 
     def __init__(self, transform, mode, batch_size, sentences_file, sentences_root,
