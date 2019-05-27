@@ -16,6 +16,7 @@ This structure is after the flickr data shuffler script is run.
 ```bash
 data
 ├───flickr_30kentities
+│   ├───.ipynb_checkpoints
 │   ├───annotations_flickr
 │   │   ├───Annotations
 │   │   │   ├───test
@@ -25,10 +26,11 @@ data
 │   │       ├───test
 │   │       ├───train
 │   │       └───val
-│   └───flickr30k-images
-│       ├───test
-│       ├───train
-│       └───val
+│   ├───flickr30k-images
+│   │   ├───test
+│   │   ├───train
+│   │   └───val
+│   └───__pycache__
 └───mscoco
     ├───annotations
     ├───images
@@ -43,5 +45,6 @@ data
 ## Steps
 
 - If using flickr data, recommend running the flickr data shuffler script first.
+- Then run flickr caption parser script that creates a json file, while combining sentence and annotation data.
 - Explore args in main.py
 - run ``` python .\main.py ```
