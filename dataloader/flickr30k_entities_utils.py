@@ -20,7 +20,7 @@ def get_sentence_data(fn):
                                     phrase belongs to
 
     """
-    with open(fn, 'r') as f:
+    with open(fn, encoding='utf-8', mode='r') as f:
         sentences = f.read().split('\n')
 
     annotations = []
