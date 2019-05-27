@@ -2,7 +2,7 @@ import os
 import json
 import nltk
 import argparse
-
+from tqdm import tqdm
 import sys
 
 path_to_dataloader = '../../'
@@ -24,8 +24,10 @@ def main(args):
     ann_path = os.path.join('annotations_flickr', 'Annotations', args.folder)
     data = {}  # This will be converted to json file later
     caption_id = 0
-    for sen_file in os.listdir(sen_path):
-        print(os.path.join(sen_path, sen_file))
+    files = os.listdir(sen_path)
+    for i in tqdm(range(len(files))):
+        sen_file = files[i]
+        # print(os.path.join(sen_path, sen_file))
         image_id = sen_file.replace('.txt', '.jpg')  # Keys in the dictionary.
         ann_file = sen_file.replace('.txt', '.xml')  # Annotation file
 
@@ -33,19 +35,32 @@ def main(args):
         annotations = get_annotations(os.path.join(ann_path, ann_file))
 
         for caption in captions:
-            data[caption_id] = single_caption_parser(caption, image_id)
+            data[caption_id] = make_caption_with_boxes(caption, image_id, annotations)
             caption_id += 1
         # if image_id not in data:
         #     data[image_id] = []
         # data[image_id].extend(id_processor(all_captions))
 
-    print("Data dictionary created. Now creating JSON File")
+    print("Data dictionary created.")
     if args.make_file == 'make':
         create_json(sen_path, data)
         print("JSON File created")
     else:
         print(json.dumps(data, indent=4))
         return
+
+
+def make_caption_with_boxes(caption, image_file, annotations):
+    new_caption = single_caption_parser(caption, image_file)
+    box_coordinates = list()
+    for box_id in new_caption['box_ids']:
+        if box_id not in list(annotations['boxes'].keys()):
+            box_coordinates.append('None')
+        else:
+            box_coordinates.append(annotations['boxes'][box_id])
+
+    new_caption['boxes'] = box_coordinates
+    return new_caption
 
 
 def single_caption_parser(caption, image_file):
