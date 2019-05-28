@@ -67,21 +67,10 @@ class FlickrDataset(data.Dataset):
             image = self.transform(image)
 
             caption_tokens = self.sentences[ann_id]['parsed_caption']
-            caption_boxes = self.sentences[ann_id]['boxes']
+            # caption_boxes = self.sentences[ann_id]['boxes']
 
             caption = self.process_captions(caption_tokens, flag='caption')
-            boxes = self.process_captions(caption_boxes, flag='boxes')
-            # b1 = [{k: v} for k, v in enumerate(boxes)]
-            # print(boxes)
-            # b1 = torch.Tensor([item for item in boxes])
-            #
-            # caption = list()
-            # caption.append(self.start_word)
-            # caption.extend(caption_tokens)
-            # caption.append(self.end_word)
-            #
-            # if self.pad_caption:
-            #     caption.extend([self.end_word] * (self.pad_limit - len(caption_tokens)))
+            # boxes = self.process_captions(caption_boxes, flag='boxes')
 
             caption_gloves = torch.Tensor([self.token_glove_generator(item) \
                                            for item in caption])
@@ -95,28 +84,24 @@ class FlickrDataset(data.Dataset):
             image = self.transform(image)
 
             caption_tokens = self.sentences[ann_id]['tok_sent']
-            caption = list()
-            caption.append(self.start_word)
-            caption.extend(caption_tokens)
-            caption.append(self.end_word)
-
-            if self.pad_caption:
-                caption.extend([self.end_word] * (self.pad_limit - len(caption_tokens)))
+            caption = self.process_captions(caption_tokens, flag='caption')
 
             caption_gloves = torch.Tensor([self.token_glove_generator(item) \
                                            for item in caption])
 
-            return image, caption_gloves, caption
+            return image, caption_gloves, ann_id
 
-    def get_glove(self, word):
-        if word not in self.vocab_glove.keys():
-            return self.vocab_glove['<unk>']
-        return self.vocab_glove[word]
 
     def process_captions(self, list_of_items, flag):
+        """
+        Creates a padded list of items based on requirements
+        :param list_of_items: List of words or boxes
+        :param flag: decides if caption list needs to be padded or boxes list
+        :return: padded list of captions or boxes.
+        """
         processed_list = list()
 
-        if flag=='caption':
+        if flag == "caption":
             processed_list.append(self.start_word)
             processed_list.extend(list_of_items)
             processed_list.append(self.end_word)
@@ -132,7 +117,22 @@ class FlickrDataset(data.Dataset):
 
         return processed_list
 
+    def get_glove(self, word):
+        """
+        Generates a 300-dimensional embedding for a word
+        :param word: a string representing a word
+        :return: a 300-dimensional numpy array for the GloVE Embedding
+        """
+        if word not in self.vocab_glove.keys():
+            return self.vocab_glove['<unk>']
+        return self.vocab_glove[word]
+
     def token_glove_generator(self, token):
+        """
+        Returns a glove embedding for a single element or a list of elements
+        :param token: token is a list or a string
+        :return: Average of glove embeddings of all elements in a list or just of the string item
+        """
         if type(token) is not list:
             return self.get_glove(token)
 
@@ -147,6 +147,10 @@ class FlickrDataset(data.Dataset):
             return glove_embedding
 
     def get_indices(self):
+        """
+        Depending on pad_caption condition choose a list of indices from ids which fit condition
+        :return: List of indices for the batch sampler in the dataloader to handle
+        """
         if self.pad_caption:
             all_indices = np.where([self.caption_lengths[i] <= \
                                     self.pad_limit for i in np.arange(len(self.caption_lengths))])[0]
@@ -159,4 +163,8 @@ class FlickrDataset(data.Dataset):
         return indices
 
     def __len__(self):
+        """
+        Size of the dataset class
+        :return: Number of captions in the dataset fold. 
+        """
         return len(self.ids)
