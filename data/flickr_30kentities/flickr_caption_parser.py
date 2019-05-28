@@ -55,7 +55,7 @@ def make_caption_with_boxes(caption, image_file, annotations):
     box_coordinates = list()
     for box_id in new_caption['box_ids']:
         if box_id not in list(annotations['boxes'].keys()):
-            box_coordinates.append('None')
+            box_coordinates.append([0])
         else:
             box_coordinates.append(annotations['boxes'][box_id])
 
