@@ -37,6 +37,7 @@ class FlickrDataset(data.Dataset):
         self.sentences_folder = sentences_root
         self.sentences_file = sentences_file
         self.annotations_folder = annotations_root
+        self.none_word = [0]
 
         # All sentences
         self.sentences = json.load(open(self.sentences_file, 'r'))
@@ -66,18 +67,26 @@ class FlickrDataset(data.Dataset):
             image = self.transform(image)
 
             caption_tokens = self.sentences[ann_id]['parsed_caption']
-            caption = list()
-            caption.append(self.start_word)
-            caption.extend(caption_tokens)
-            caption.append(self.end_word)
+            caption_boxes = self.sentences[ann_id]['boxes']
 
-            if self.pad_caption:
-                caption.extend([self.end_word] * (self.pad_limit - len(caption_tokens)))
+            caption = self.process_captions(caption_tokens, flag='caption')
+            boxes = self.process_captions(caption_boxes, flag='boxes')
+            # b1 = [{k: v} for k, v in enumerate(boxes)]
+            # print(boxes)
+            # b1 = torch.Tensor([item for item in boxes])
+            #
+            # caption = list()
+            # caption.append(self.start_word)
+            # caption.extend(caption_tokens)
+            # caption.append(self.end_word)
+            #
+            # if self.pad_caption:
+            #     caption.extend([self.end_word] * (self.pad_limit - len(caption_tokens)))
 
             caption_gloves = torch.Tensor([self.token_glove_generator(item) \
                                            for item in caption])
 
-            return image, caption_gloves, caption
+            return image, caption_gloves, ann_id
 
         elif self.mode in ['train', 'val', 'test'] and self.parse_mode == 'default':
             ann_id = self.ids[index]
@@ -103,6 +112,25 @@ class FlickrDataset(data.Dataset):
         if word not in self.vocab_glove.keys():
             return self.vocab_glove['<unk>']
         return self.vocab_glove[word]
+
+    def process_captions(self, list_of_items, flag):
+        processed_list = list()
+
+        if flag=='caption':
+            processed_list.append(self.start_word)
+            processed_list.extend(list_of_items)
+            processed_list.append(self.end_word)
+            if self.pad_caption:
+                processed_list.extend([self.end_word] * (self.pad_limit - len(list_of_items)))
+
+        else:
+            processed_list.append(self.none_word)
+            processed_list.extend(list_of_items)
+            processed_list.append(self.none_word)
+            if self.pad_caption:
+                processed_list.extend([self.none_word] * (self.pad_limit - len(list_of_items)))
+
+        return processed_list
 
     def token_glove_generator(self, token):
         if type(token) is not list:
