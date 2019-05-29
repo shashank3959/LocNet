@@ -165,6 +165,6 @@ class FlickrDataset(data.Dataset):
     def __len__(self):
         """
         Size of the dataset class
-        :return: Number of captions in the dataset fold. 
+        :return: Number of captions in the dataset fold without get indices.
         """
         return len(self.ids)
