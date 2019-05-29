@@ -44,7 +44,13 @@ data
 
 ## Steps
 
-- If using flickr data, recommend running the flickr data shuffler script first.
-- Then run flickr caption parser script that creates a json file, while combining sentence and annotation data.
-- Explore args in main.py
-- run ``` python .\main.py ```
+- Run download_data.sh 
+- ``` cd 'data/flickr30k_entities'```
+- ``` python flickr_data_shuffler.py```
+- ``` python flickr_vocab_gen.py```
+- ``` python flickr_caption_parser.py```
+    - This can be used with required arguments. 
+    - mk: decide to create a data.json file out of the parsed captions. If not 'make' then script just prints the json data.
+    - 'fold': decide which fold of data to operate on. Default is 'train'.
+- ``` cd ../..```
+- ``` python .\main.py ``` with necessary args
