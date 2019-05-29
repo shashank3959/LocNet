@@ -140,10 +140,8 @@ def get_loader_flickr(transform,
                             pad_limit=pad_limit)
 
     if dataset.pad_caption:
-        print('Pad Caption: ', dataset.pad_caption)
         # Randomly sample a caption length, and sample indices with that length.
         indices = dataset.get_indices()
-        print("Indices: ", indices, len(indices))
         # Create and assign a batch sampler to retrieve a batch with the sampled indices.
         initial_sampler = data.sampler.SubsetRandomSampler(indices=indices)
         # data loader for COCO dataset.
