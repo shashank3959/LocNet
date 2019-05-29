@@ -7,3 +7,4 @@ __pycache__/
 .idea/
 Untitled.ipynb
 vim.exe.stackdump
+dataloader/data_loader.py
