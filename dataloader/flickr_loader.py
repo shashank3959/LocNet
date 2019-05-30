@@ -37,7 +37,7 @@ class FlickrDataset(data.Dataset):
         self.sentences_folder = sentences_root
         self.sentences_file = sentences_file
         self.annotations_folder = annotations_root
-        self.none_word = [0]
+        self.none_word = "<none>"
 
         # All sentences
         self.sentences = json.load(open(self.sentences_file, 'r'))
@@ -75,7 +75,7 @@ class FlickrDataset(data.Dataset):
             caption_gloves = torch.Tensor([self.token_glove_generator(item) \
                                            for item in caption])
 
-            return image, caption_gloves, ann_id
+            return image, caption_gloves, caption, ann_id
 
         elif self.mode in ['train', 'val', 'test'] and self.parse_mode == 'default':
             ann_id = self.ids[index]
@@ -89,7 +89,7 @@ class FlickrDataset(data.Dataset):
             caption_gloves = torch.Tensor([self.token_glove_generator(item) \
                                            for item in caption])
 
-            return image, caption_gloves, ann_id
+            return image, caption_gloves, caption, ann_id
 
 
     def process_captions(self, list_of_items, flag):
