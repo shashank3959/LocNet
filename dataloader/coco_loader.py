@@ -64,7 +64,7 @@ class CoCoDataset(data.Dataset):
 
     def __getitem__(self, index):
 
-        # Obtain image and caption if in training or validation mode
+        # Obtain image and caption glove tensor if in training or validation mode
         if self.mode in ["train", "val"] and self.disp_mode == "default":
             ann_id = self.ids[index]
             caption = self.coco.anns[ann_id]["caption"]
