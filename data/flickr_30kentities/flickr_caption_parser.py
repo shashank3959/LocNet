@@ -50,16 +50,18 @@ def main(args):
         return
 
 
-def make_caption_with_boxes(caption, image_file, annotations):
+def make_caption_with_boxes(caption, image_file, annotation):
     new_caption = single_caption_parser(caption, image_file)
+    image_size = {'width': annotation['width'], 'height': annotation['height']}
     box_coordinates = list()
     for box_id in new_caption['box_ids']:
-        if box_id not in list(annotations['boxes'].keys()):
-            box_coordinates.append([0])
+        if box_id not in list(annotation['boxes'].keys()):
+            box_coordinates.append('<none>')
         else:
-            box_coordinates.append(annotations['boxes'][box_id])
+            box_coordinates.append(annotation['boxes'][box_id])
 
     new_caption['boxes'] = box_coordinates
+    new_caption['image_size'] = image_size
     return new_caption
 
 
@@ -67,22 +69,27 @@ def single_caption_parser(caption, image_file):
     new_caption, phrase_words, phrases = phrase_data(caption)
 
     final_caption = []
+    parsed_caption_indices = []
     caption_boxes = []
     index = 0
     while index < len(new_caption['tok_sent']):
         if not new_caption['tok_sent'][index] in phrase_words:
             final_caption.append([new_caption['tok_sent'][index]])
+            parsed_caption_indices.append([index])
             caption_boxes.append('None')
             index += 1
         else:
             i = index + 1
             phrase = [new_caption['tok_sent'][index]]
+            parsed_phrase = [index]
             while i < len(new_caption['tok_sent']) and new_caption['tok_sent'][i] in phrase_words:
                 phrase.append(new_caption['tok_sent'][i])
+                parsed_phrase.append(i)
                 i += 1
                 if phrase in list(phrases.values()):
                     break
             final_caption.append(phrase)
+            parsed_caption_indices.append(parsed_phrase)
             phrase_id = dictionary_search(phrases, phrase)
             caption_boxes.append(phrase_id)
             index = i
@@ -90,6 +97,7 @@ def single_caption_parser(caption, image_file):
     new_caption['parsed_caption'] = final_caption
     new_caption['image_file'] = image_file
     new_caption['box_ids'] = caption_boxes
+    new_caption['caption_index'] = parsed_caption_indices
     return new_caption
 
 
