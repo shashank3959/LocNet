@@ -10,6 +10,14 @@ from steps import *
 from models import *
 from dataloader import *
 
+from . import flickr_processor
+from . import coco_processor
+
+path_to_file = '../data/flickr_30kentities/annotations_flickr/Sentences/test/data.json'
+f = open(path_to_file, encoding='utf-8', mode='r')
+data = json.load(f)
+print('Loaded Flickr annotation data!')
+
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -30,8 +38,8 @@ def get_data(batch_size, dataset, parse_mode):
                                           mode='test',
                                           parse_mode=parse_mode)
         for batch in flickr_loader:
-            image, caption_glove, ann_id = batch[0], batch[1], batch[2]
-        return image, caption_glove, ann_id
+            image, caption_glove, caption, ann_id = batch[0], batch[1], batch[2]
+        return image, caption_glove, caption, ann_id
 
     else:
         assert parse_mode != 'phrase', "MSCOCO doesn't support phrase parsing"
@@ -83,26 +91,43 @@ def gen_matchmap_list(image_model, caption_model,
 
     return matchmap_list
 
-def pre_process_matchmaps(matchmap_list):
-    pass
 
-def see_results(dataset='flickr', batch_size=1, parse_mode='phrase'):
-    path_to_file = '../data/flickr_30kentities/annotations_flickr/Sentences/test/data.json'
+def find_matchmap(index, dataset='flickr', batch_size=1, parse_mode='phrase'):
+    """
+    Generate a specific matchmap based on dataset and index
+    Creates a list of matchmaps first and then passes specific matchmap
+    """
+    image_model, caption_model = get_models(model_path='')
     if dataset == 'flickr':
-        image, caption_glove, ann_id = get_data(batch_size,
+        image, caption_glove, captions, ids = get_data(batch_size,
                                               dataset,
                                               parse_mode)
-        print('Loaded data!')
-        f = open(path_to_file, encoding='utf-8', mode='r')
-        data = json.load(f)
-        print('Loaded annotation data!')
+        matchmap_list = gen_matchmap_list(image_model, caption_model,
+                                          image, caption_glove,
+                                          batch_size)
+        element = {'image': image,
+                   'matchmap': matchmap_list[index],
+                   'caption': ids[index]}
+
+        return element
+
+    elif dataset in ['coco', 'mscoco']:
+        image, caption_glove, captions = get_data(batch_size,
+                                                 dataset)
+        captions = coco_processor.caption_list_gen(captions)
+        matchmap_list = gen_matchmap_list(image_model, caption_model,
+                                          image, caption_glove,
+                                          batch_size)
+
+        element = {'image': image,
+                   'matchmap': matchmap_list[index],
+                   'caption': captions[index]}
+
+        return element
+
+    print("Error. Specify dataset!")
+    return
 
 
-    image_model, caption_model = get_models(model_path='')
-    matchmap_list = gen_matchmap_list(image_model, caption_model,
-                                      image, caption_glove,
-                                      batch_size)
 
 
-
-    pass
