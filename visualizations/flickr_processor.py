@@ -1,25 +1,35 @@
 import numpy as np
 import cv2
 from torchvision import transforms
+import json
 
-from steps import *
-from models import *
-from dataloader import *
-
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize((0.485, 0.456, 0.406),
-                         (0.229, 0.224, 0.225))])
+from steps.utils import *
+from dataloader import get_loader_flickr
+from visualize_utils import *
 
 
-def get_data(batch_size, parse_mode):
+path_to_file = '../data/flickr_30kentities/annotations_flickr/Sentences/test/data.json'
+f = open(path_to_file, encoding='utf-8', mode='r')
+data = json.load(f)
+print('Loaded Flickr annotation data!')
+transform = transforms.Compose([transforms.Resize((224, 224)),
+                                transforms.ToTensor(),
+                                transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))])
+
+
+def load_data(batch_size, parse_mode='phrase'):
+    """
+    Loads data from test fold of flickr dataset using flickr_loader
+    :param parse_mode: decides whether the captions should be parsed 
+    :return: image tensor, caption glove tensor and tuple of caption ids
+    """
+    flickr_loader = get_loader_flickr(transform=transform, batch_size=batch_size,
+                                      mode='test', parse_mode=parse_mode)
     
-    flickr_loader = get_loader_flickr(transform=transform,
-                                      batch_size=batch_size,
-                                      mode='test',
-                                      parse_mode=parse_mode)
+    for batch in flickr_loader:
+        (image, caption_glove, caption, ids) = batch
 
+    return image, caption_glove, ids
 
 
 def list2string(query_list):
@@ -31,19 +41,6 @@ def list2string(query_list):
     final_string = separator.join(query_list)
     return final_string
 
-
-def rgb2gray(rgb):
-    # Convert color numpy image to grayscale
-    return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
-
-
-def tensor2img(tensor_image):
-    # Convert each tensor image to numpy image
-    img = tensor_image.permute(1, 2, 0)
-    color_img = img.numpy()
-    bw_img = rgb2gray(color_img)
-
-    return color_img, bw_img
 
 
 def clip_list(query_list, ann_id, data, parse_mode):
@@ -59,9 +56,9 @@ def clip_list(query_list, ann_id, data, parse_mode):
     return query_list, caption
 
 
-def master_processor(element):
-    matchmap, caption = clip_list(element['matchmap'],
-                                  element['caption'])
+def master_processor(element, ):
+    co_loc_map, ann_id = element['co_loc_map'], elemenet['caption']
+
     color_image, bw_image = element['image']
     mask_list = list()
     for mmap in matchmap:
