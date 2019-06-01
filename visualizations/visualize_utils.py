@@ -23,6 +23,29 @@ from tqdm import tqdm
 from steps.utils import matchmap_generate
 from models import VGG19, LSTMBranch
 
+import sys
+
+path_to_dataloader = '../'
+sys.path.append(path_to_dataloader)
+
+from dataloader import get_loader_flickr
+
+
+def flickr_load_data(batch_size, parse_mode, transform):
+    """
+    Loads data from test fold of flickr dataset using flickr_loader
+    :param parse_mode: decides whether the captions should be parsed 
+    :return: image tensor, caption glove tensor and tuple of caption ids
+    """
+    flickr_loader = get_loader_flickr(transform=transform,
+                                      batch_size=batch_size,
+                                      mode='test', parse_mode=parse_mode)
+
+    for batch in flickr_loader:
+        image, caption_glove, caption, ids = batch[0], batch[1], batch[2], batch[3]
+
+    return image, caption_glove, ids
+
 
 def get_models(model_path):
     '''
