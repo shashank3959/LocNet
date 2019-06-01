@@ -16,8 +16,8 @@ transform = transforms.Compose([transforms.Resize((224, 224)),
 
 class FlickrViz():
 
-    def __init__(self, batch_size, parse_mode, model_path='saved_models/checkpoint.pth.tar', mode='test',
-                 transform=transform, eval_mode=False):
+    def __init__(self, batch_size, parse_mode, model_path='saved_models/checkpoint.pth.tar', 
+                 mode='test', transform=transform, eval_mode=False):
         self.eval_mode = eval_mode
         self.batch_size = batch_size
         self.parse_mode = parse_mode
