@@ -18,6 +18,10 @@ class FlickrViz():
 
     def __init__(self, batch_size, parse_mode, model_path='saved_models/checkpoint.pth.tar', 
                  mode='test', transform=transform, eval_mode=False):
+        """
+        If eval_mode is true, evaluate localization score for entities present in the dataset.
+        Otherwise, load models, batch-size data, compute colocalization maps. 
+        """
         self.eval_mode = eval_mode
         self.batch_size = batch_size
         self.parse_mode = parse_mode
@@ -42,6 +46,13 @@ class FlickrViz():
 
         
     def __getitem__(self, index):
+        """
+        Fetch an index to create a data element from coloc maps, image and caption data
+        :param index: index less than the batch_size of the data pooled
+        :return element: data structure containing the image, caption and bounding box information
+        used to evaluate and visualize the localization tasks being performed by the system.
+        Can only be used when eval_mode is False.
+        """
         assert not self.eval_mode, "Evaluation mode has to be False"
         raw_element = fetch_data(index,self.coloc_maps, self.image_tensor, self.ids)
         self.element = flickr_element_processor(raw_element, self.parse_mode, self.data)
@@ -49,6 +60,12 @@ class FlickrViz():
         return self.element
 
     def __call__(self, save_flag=False, seg_flag=False, thresh=0.5):
+        """
+        When called, the instance will generate heat maps for the given image and entities.
+        :param save_flag: to save results as jpg files or not
+        :param seg_flag: to show localization as segmentation masks or heat maps
+        :param thresh: threshold for segmentation
+        """
         element = self.element
         color_img = element['image']['color']
         color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
@@ -76,6 +93,14 @@ class FlickrViz():
             mask_viz(mask_list, caption, bw_img, save_flag, save_name_results)
 
     def loc_eval(self, last):
+        """
+        When in eval mode, this will load entire dataset and iteratively find
+        localization score for each image first and then average it to find 
+        localization score for the entire dataset. Only works when eval_mode is True.
+        :param last: number of images to evaluate. For full dataset, use len(data_loader.dataset)
+        :return score_list: last - length list of all scores
+        :return mean(score_list): mean localization score for dataset. 
+        """
         score_list = list()
         for index in np.arange(last):
             image_tensor, caption_glove, caption, cap_id = self.dataset[index]
