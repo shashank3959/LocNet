@@ -4,6 +4,8 @@ from torchvision import transforms
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+from statistics import mean
+from tqdm import tqdm
 
 # from steps.utils import *
 
@@ -15,7 +17,8 @@ transform = transforms.Compose([transforms.Resize((224, 224)),
 class FlickrViz():
 
     def __init__(self, batch_size, parse_mode, model_path='saved_models/checkpoint.pth.tar', mode='test',
-                 transform=transform):
+                 transform=transform, eval_mode=False):
+        self.eval_mode = eval_mode
         self.batch_size = batch_size
         self.parse_mode = parse_mode
         self.json_path = 'data/flickr_30kentities/annotations_flickr/Sentences/test/data.json'
@@ -23,14 +26,23 @@ class FlickrViz():
         self.model_path = model_path
         self.mode = mode
         self.transform = transform
-        self.image_tensor, self.caption_glove, self.ids = flickr_load_data(self.batch_size,
+        self.image_model, self.caption_model = get_models(self.model_path)
+        
+        if self.eval_mode:
+            loader = flickr_load_data(1, self.parse_mode, self.transform,
+                                      self.mode, self.eval_mode)
+            self.dataset = loader.dataset
+
+        else:
+            self.image_tensor, self.caption_glove, self.ids = flickr_load_data(self.batch_size,
                                                                            self.parse_mode,
                                                                            self.transform)
-        image_model, caption_model = get_models(self.model_path)
-        self.coloc_maps = gen_coloc_maps(image_model, caption_model,
+            self.coloc_maps = gen_coloc_maps(image_model, caption_model,
                                     self.image_tensor, self.caption_glove)
+
         
     def __getitem__(self, index):
+        assert not self.eval_mode, "Evaluation mode has to be False"
         raw_element = fetch_data(index,self.coloc_maps, self.image_tensor, self.ids)
         self.element = flickr_element_processor(raw_element, self.parse_mode, self.data)
 
@@ -62,3 +74,22 @@ class FlickrViz():
 
         else:
             mask_viz(mask_list, caption, bw_img, save_flag, save_name_results)
+
+    def loc_eval(self, last):
+        score_list = list()
+        for index in np.arange(last):
+            image_tensor, caption_glove, caption, cap_id = self.dataset[index]
+            image_tensor = image_tensor.unsqueeze(0)
+            caption_glove = caption_glove.unsqueeze(0)
+            co_loc_map = gen_coloc_maps(self.image_model, self.caption_model,
+                                        image_tensor, caption_glove)
+            element = fetch_data(0, co_loc_map, image_tensor, cap_id)
+            element = flickr_element_processor(element, self.parse_mode, self.data)
+            score = element_score(element)
+            score_list.append(score)
+            print(score, mean(score_list))
+
+        return mean(score_list), score_list
+
+
+
