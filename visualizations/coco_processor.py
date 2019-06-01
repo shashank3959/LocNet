@@ -13,12 +13,13 @@ transform = transforms.Compose([transforms.Resize((224, 224)),
                                 transforms.ToTensor(),
                                 transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))])
 
-
-
 class COCOViz():
 
     def __init__(self, batch_size, model_path='saved_models/checkpoint.pth.tar',
                  mode='val', transform=transform):
+        """
+        Load models, batch-size data, compute colocalization maps. 
+        """
 
         self.batch_size = batch_size
         self.model_path = model_path
@@ -35,6 +36,12 @@ class COCOViz():
                                            self.image_tensor, self.caption_glove)
 
     def __getitem__(self, index):
+        """
+        Fetch an index to create a data element from coloc maps, image and caption data
+        :param index: index less than the batch_size of the data pooled
+        :return element: data structure containing the image, caption and bounding box information
+        used to evaluate and visualize the localization tasks being performed by the system.
+        """
 
         element = fetch_data(index, self.coloc_maps, self.image_tensor, self.caption)
         self.element = coco_element_processor(element)
@@ -42,6 +49,12 @@ class COCOViz():
         return self.element
 
     def __call__(self, save_flag=False, seg_flag=False, thresh=0.5):
+        """
+        When called, the instance will generate heat maps for the given image and entities.
+        :param save_flag: to save results as jpg files or not
+        :param seg_flag: to show localization as segmentation masks or heat maps
+        :param thresh: threshold for segmentation
+        """
         element = self.element
         color_img = element['image']['color']
         color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
