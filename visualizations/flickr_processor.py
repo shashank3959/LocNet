@@ -2,19 +2,26 @@ import numpy as np
 import cv2
 from torchvision import transforms
 import json
+import sys
 
-from steps.utils import *
+path_to_dataloader = '../'
+sys.path.append(path_to_dataloader)
+
+
+# from steps.utils import *
 from dataloader import get_loader_flickr
-from visualize_utils import *
+from .visualize_utils import *
 
 
-path_to_file = '../data/flickr_30kentities/annotations_flickr/Sentences/test/data.json'
-f = open(path_to_file, encoding='utf-8', mode='r')
-data = json.load(f)
-print('Loaded Flickr annotation data!')
 transform = transforms.Compose([transforms.Resize((224, 224)),
                                 transforms.ToTensor(),
                                 transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))])
+
+
+def load_json_data(path_to_file):
+    f = open(path_to_file, encoding='utf-8', mode='r')
+    data = json.load(f)
+    return data
 
 
 def load_data(batch_size, parse_mode):
@@ -23,17 +30,19 @@ def load_data(batch_size, parse_mode):
     :param parse_mode: decides whether the captions should be parsed 
     :return: image tensor, caption glove tensor and tuple of caption ids
     """
-    flickr_loader = get_loader_flickr(transform=transform, batch_size=batch_size,
+    flickr_loader = get_loader_flickr(transform=transform,
+                                      batch_size=batch_size,
                                       mode='test', parse_mode=parse_mode)
 
     for batch in flickr_loader:
-        (image, caption_glove, caption, ids) = batch
+        image, caption_glove, caption, ids = batch[0], batch[1], batch[2], batch[3]
 
     return image, caption_glove, ids
 
 
 def gen_data_element(index, batch_size=1, parse_mode='phrase',
-                     model_path='..saved_models/checkpoint.pth.tar'):
+                     model_path='saved_models/checkpoint.pth.tar',
+                     json_path='data/flickr_30kentities/annotations_flickr/Sentences/test/data.json'):
     """
     Generates a dictionary of data elements from flickr dataset
     :param index: choose data from a batch using this index
@@ -46,10 +55,12 @@ def gen_data_element(index, batch_size=1, parse_mode='phrase',
     :return element['caption']: tokenized and clipped caption depending on parse_mode
     :return element['coloc_map']: resized and clipped coloc_map masks for the given data point
     """
-    assert index < batch_size, "Index out of range"
+    assert index < batch_size
 
     image_model, caption_model = get_models(model_path)
-    image_tensor, caption_glove, ids = load_data(batch, parse_mode=parse_mode)
+    data = load_json_data(path_to_file=json_path)
+    print("Loaded models")
+    image_tensor, caption_glove, ids = load_data(batch_size=batch_size, parse_mode=parse_mode)
     coloc_maps = gen_coloc_maps(image_model, caption_model,
                                 image_tensor, caption_glove)
     raw_element = fetch_data(index, coloc_maps, image_tensor, ids)
@@ -59,3 +70,28 @@ def gen_data_element(index, batch_size=1, parse_mode='phrase',
     return element
 
 
+def visualize_masks(element, save_flag=False, seg_flag=False, thresh=0.5):
+    color_img = element['image']['color']
+    color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
+    bw_img = element['image']['bw']
+
+    mask_list = element['coloc_map']
+    caption = phrase_detokenizer(element['caption'])
+
+    plt.imshow(color_img)
+    plt.title("Original Image")
+    plt.axis("off")
+    plt.show()
+
+    save_name_results = ''
+
+    if save_flag:
+        save_name_original = element['name'] + '_original.png'
+        save_name_results = element['name'] + '_results.png'
+        plt.imsave(save_name_original, color_img)
+
+    if seg_flag:
+        seg_viz(mask_list, caption, color_img, thresh, save_flag, save_name_results)
+
+    else:
+        mask_viz(mask_list, caption, bw_img, save_flag, save_name_results)
