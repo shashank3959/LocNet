@@ -26,25 +26,17 @@ class FlickrViz():
         self.image_tensor, self.caption_glove, self.ids = flickr_load_data(self.batch_size,
                                                                            self.parse_mode,
                                                                            self.transform)
-        
-
-    def __call__(self):
-        """
-        Load model and load data. 
-        """
         image_model, caption_model = get_models(self.model_path)
         self.coloc_maps = gen_coloc_maps(image_model, caption_model,
                                     self.image_tensor, self.caption_glove)
-        return self.coloc_maps
         
-
     def __getitem__(self, index):
         raw_element = fetch_data(index,self.coloc_maps, self.image_tensor, self.ids)
         self.element = flickr_element_processor(raw_element, self.parse_mode, self.data)
 
         return self.element
 
-    def show_masks(self, save_flag=False, seg_flag=False, thresh=0.5):
+    def __call__(self, save_flag=False, seg_flag=False, thresh=0.5):
         element = self.element
         color_img = element['image']['color']
         color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
