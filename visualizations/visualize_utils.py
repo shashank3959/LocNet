@@ -31,7 +31,7 @@ sys.path.append(path_to_dataloader)
 from dataloader import get_loader_flickr
 
 
-def flickr_load_data(batch_size, parse_mode, transform):
+def flickr_load_data(batch_size, parse_mode, transform, mode='test', eval_mode=False):
     """
     Loads data from test fold of flickr dataset using flickr_loader
     :param parse_mode: decides whether the captions should be parsed 
@@ -39,10 +39,13 @@ def flickr_load_data(batch_size, parse_mode, transform):
     """
     flickr_loader = get_loader_flickr(transform=transform,
                                       batch_size=batch_size,
-                                      mode='test', parse_mode=parse_mode)
+                                      mode=mode, parse_mode=parse_mode)
 
     for batch in flickr_loader:
         image, caption_glove, caption, ids = batch[0], batch[1], batch[2], batch[3]
+
+    if eval_mode:
+        return flickr_loader
 
     return image, caption_glove, ids
 
@@ -79,7 +82,7 @@ def gen_coloc_maps(image_model, caption_model,
     batch_size = image_tensor.size(0)
     coloc_maps = list()
 
-    for i in tqdm(np.arange(batch_size)):
+    for i in np.arange(batch_size):
         coloc = matchmap_generate(image_op[i], caption_op[i])
         mm = coloc.detach().numpy()
         coloc_maps.append(mm)
@@ -362,9 +365,18 @@ def single_image_score(boxes, coordinates_max):
         if type(boxes[frame_index]) is not list:
             continue
         else:
-            total += 1
             for box in boxes[frame_index]:
+                total += 1
                 hits += hit_condition(coordinates_max[frame_index], box)
 
     score = hits / total
     return score
+
+def element_score(element):
+    boxes = element['boxes']
+    image_size = element['image_size']
+
+    coords_max = find_mask_max(element['coloc_map'])
+    boxes = flickr_box_converter(boxes, image_size)
+
+    return single_image_score(boxes, coords_max)
