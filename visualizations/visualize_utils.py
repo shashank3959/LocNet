@@ -3,7 +3,7 @@ Will have general utils functions that will be used  by both
 1. flickr_processor.py
 2. coco_processor.py
 
-First built keeping flickr_processor in mind.
+First built keeping flickr_processo2r in mind.
 
 Functions included:
 	1. load model
@@ -15,7 +15,6 @@ Functions included:
 
 import torch
 import os
-import json
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -54,7 +53,7 @@ def gen_coloc_maps(image_model, caption_model,
     """
     image_op = image_model(image_tensor)
     caption_op = caption_model(caption_glove)
-    batch_size = image_model.size(0)
+    batch_size = image_tensor.size(0)
     coloc_maps = list()
 
     for i in tqdm(np.arange(batch_size)):
@@ -157,7 +156,7 @@ def flickr_element_processor(element, parse_mode, data):
     """
     caption_data = data[element['caption']]
     index_list = caption_data['caption_index']
-    coloc_map = element['coloc_map']
+    coloc_map = list(element['coloc_map'])
     if parse_mode == 'phrase':
         caption = caption_data['parsed_caption']
     else:
@@ -238,7 +237,7 @@ def mask_viz(mask_list, caption, bw_img, save_flag=False, save_name=''):
         fig.add_subplot(rows, columns, id + 1)
         plt.imshow(bw_img)
         plt.imshow(mask, cmap='jet', alpha=0.5)
-        plt.title(cap_phrase, fontdict={'fontsize': 10})
+        plt.title(cap_phrase, fontdict={'fontsize': 70})
         plt.axis('off')
     plt.show()
 
@@ -253,7 +252,7 @@ def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''
     columns = len(mask_list) + 1
     rows = 1
 
-    for id in range(len(mask_list)) + 1:
+    for id in range(len(mask_list)):
         cap_phrase = caption[id]
         mask = cv2.resize(mask_list[id], dsize=(224, 224))
         mask2 = np.where((mask < thresh * np.mean(mask)), 0, 1).astype('uint8')
@@ -261,8 +260,8 @@ def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''
         fig.add_subplot(rows, columns, id + 1)
         img = color_img * mask2[:, :, np.newaxis]
 
-        plt.imshow(mask, cmap='jet', alpha=0.5)
-        plt.title(cap_phrase, fontdict={'fontsize': 10})
+        plt.imshow(img)
+        plt.title(cap_phrase, fontdict={'fontsize': 70})
         plt.axis('off')
 
     plt.show()
