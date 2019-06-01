@@ -178,6 +178,8 @@ def flickr_element_processor(element, parse_mode, data):
     Processed image has been converted to np images ready to be plotted
     """
     caption_data = data[element['caption']]
+    bboxes = caption_data['boxes']
+    image_size = caption_data['image_size']
     index_list = caption_data['caption_index']
     coloc_map = list(element['coloc_map'])
     if parse_mode == 'phrase':
@@ -196,6 +198,8 @@ def flickr_element_processor(element, parse_mode, data):
     element['coloc_map'] = coloc_map
     element['caption'] = caption
     element['image'] = tensor2img(element['image'])
+    element['boxes'] = bboxes
+    element['image_size'] = image_size
 
     return element
 
@@ -248,7 +252,6 @@ def phrase_detokenizer(caption):
     return new_caption
 
 
-
 def mask_viz(mask_list, caption, bw_img, save_flag=False, save_name=''):
 
     fig = plt.figure(figsize=(100,30), facecolor="white")
@@ -279,7 +282,8 @@ def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''
         cap_phrase = caption[id]
         mask = cv2.resize(mask_list[id], dsize=(224, 224))
         mask2 = np.where((mask < thresh * np.mean(mask)), 0, 1).astype('uint8')
-
+        ind = np.unravel_index(np.argmax(mask, axis=None), mask.shape)
+        cap_phrase = cap_phrase + str(ind)
         fig.add_subplot(rows, columns, id + 1)
         img = color_img * mask2[:, :, np.newaxis]
 
@@ -288,11 +292,79 @@ def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''
         plt.axis('off')
 
     plt.show()
+    print(img.shape)
 
     if save_flag:
         fig.savefig(save_name)
 
 
+def find_mask_max(mask_list):
+    """
+    Find the coordinates of the maximum point in each mask
+    :param mask_list: list of co localization masks
+    :return coords_max: list of tuples. Each tuple is max_coordinate
+    """
+    coords_max = list()
+    for id in range(len(mask_list)):
+        mask = cv2.resize(mask_list[id], dsize=(224, 224))
+        ind = np.unravel_index(np.argmax(mask, axis=None), mask.shape)
+        coords_max.append(ind)
+    return coords_max
 
 
+def flickr_box_converter(boxes, image_size):
+    """
+    Bounding box coordinates change because image is of other size now
+    :param boxes: original bounding box list from element
+    :param image_size: original image size from element
+    :return new_boxes: transformed boxes with coordinates
+    """
+    width_multiplier = 224 / image_size['width']
+    height_multiplier = 224 / image_size['height']
 
+    new_boxes = list()
+    for frame in boxes:
+        if type(frame) is not list:
+            new_boxes.append('<none>')
+            continue
+        else:
+            new_frame = list()
+            for box in frame:
+                new_box = list()
+                new_box.extend([(box[0] * width_multiplier),
+                                (box[1] * height_multiplier),
+                                (box[2] * width_multiplier),
+                                (box[3] * height_multiplier)])
+                new_frame.append(new_box)
+            new_boxes.append(new_frame)
+
+    return new_boxes
+
+
+def hit_condition(tup,coord):
+    """
+    check condition whether tuple lies in coordinates
+    """
+    return int(coord[0] <= tup[0] <= coord[2]) and (coord[1] <= tup[1] <= coord[3])
+
+
+def single_image_score(boxes, coordinates_max):
+    """
+    Find out localization score for single image
+    :param boxes: ground truth bounding boxes
+    :param coordinates_max: predicted location for each entity in caption
+    :return score: localization score
+    """
+    hits = 0
+    total = 0
+
+    for frame_index in range(len(boxes)):
+        if type(boxes[frame_index]) is not list:
+            continue
+        else:
+            total += 1
+            for box in boxes[frame_index]:
+                hits += hit_condition(coordinates_max[frame_index], box)
+
+    score = hits / total
+    return score
