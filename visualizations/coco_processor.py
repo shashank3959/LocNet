@@ -43,9 +43,33 @@ class COCOViz():
 
     def __call__(self, save_flag=False, seg_flag=False, thresh=0.5):
         element = self.element
-        color_img = 
-        
+        color_img = element['image']['color']
+        color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
+        bw_img = element['image']['bw']
+        mask_list = element['coloc_map']
+        caption = element['caption']
 
+        plt.imshow(color_img)
+        plt.title("Original Image")
+        plt.axis("off")
+        plt.show()
+
+        save_name_results = ''
+
+        if save_flag:
+            save_name_original = element['name'] + '_original.png'
+            save_name_results = element['name'] + '_results.png'
+            plt.imsave(save_name_original, color_img)
+
+        if seg_flag:
+            seg_viz(mask_list, caption, color_img, thresh, save_flag, save_name_results)
+
+        else:
+            mask_viz(mask_list, caption, bw_img, save_flag, save_name_results)
+
+
+
+        
 
 
 

@@ -1,18 +1,3 @@
-"""
-Will have general utils functions that will be used  by both
-1. flickr_processor.py
-2. coco_processor.py
-
-First built keeping flickr_processo2r in mind.
-
-Functions included:
-	1. load model
-	2. generate matchmap list
-	3. fetch specific image, matchmap and caption/ID with index
-	4. clip matchmap and caption
-	5. process images
-"""
-
 import torch
 import os
 import cv2
@@ -28,7 +13,38 @@ import sys
 path_to_dataloader = '../'
 sys.path.append(path_to_dataloader)
 
-from dataloader import get_loader_flickr
+from dataloader import *
+
+
+def caption_list_gen(caption):
+    """
+    Due to the parsing done by pytorch's dataloader, captions generated there
+    is a list of positional tuples. This function creates a list of tokenized captions.
+    :param caption: list of positional tuples
+    :return caption_list: list of tokenized captions
+    """
+    caption_list = []
+    for i in range(len(caption[0])):
+        new_caption = []
+        for j in range(len(caption)):
+            new_caption.append(caption[j][i])
+        caption_list.append(new_caption)
+    return caption_list
+
+
+def coco_load_data(batch_size, transform, mode='val'):
+    """
+    Loads data from the coco dataset using fold mode
+    :return  image_tensor, caption_glove tensor, parsed list of caption:
+    """
+    coco_loader = get_loader_coco(transform=transform,
+                                  mode='val',
+                                  batch_size=batch_size)
+    for batch in cococ_loader:
+        image_tensor, caption_glove, captions = batch[0], batch[2], batch[3]
+    caption_list = caption_list_modify(captions)
+
+    return image_tensor, caption_glove, caption_list
 
 
 def flickr_load_data(batch_size, parse_mode, transform, mode='test', eval_mode=False):
@@ -256,7 +272,9 @@ def phrase_detokenizer(caption):
 
 
 def mask_viz(mask_list, caption, bw_img, save_flag=False, save_name=''):
-
+    """
+    Generate heatmap for each entity
+    """
     fig = plt.figure(figsize=(100,30), facecolor="white")
     columns = len(mask_list) + 1
     rows = 1
@@ -276,7 +294,9 @@ def mask_viz(mask_list, caption, bw_img, save_flag=False, save_name=''):
 
 
 def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''):
-
+    """
+    Generate localization masks for each entity phrase
+    """
     fig = plt.figure(figsize=(100,30), facecolor="white")
     columns = len(mask_list) + 1
     rows = 1
@@ -372,7 +392,13 @@ def single_image_score(boxes, coordinates_max):
     score = hits / total
     return score
 
+
 def element_score(element):
+    """
+    Find out localization score for each element
+    :param element: element is a dictionary
+    :return score: score for that data element
+    """
     boxes = element['boxes']
     image_size = element['image_size']
 
