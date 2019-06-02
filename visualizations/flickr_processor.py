@@ -16,7 +16,7 @@ transform = transforms.Compose([transforms.Resize((224, 224)),
 
 class FlickrViz():
 
-    def __init__(self, batch_size, parse_mode, model_path='saved_models/checkpoint.pth.tar', 
+    def __init__(self, batch_size, parse_mode, model_path, 
                  mode='test', transform=transform, eval_mode=False):
         """
         If eval_mode is true, evaluate localization score for entities present in the dataset.
@@ -41,7 +41,7 @@ class FlickrViz():
             self.image_tensor, self.caption_glove, self.ids = flickr_load_data(self.batch_size,
                                                                            self.parse_mode,
                                                                            self.transform)
-            self.coloc_maps = gen_coloc_maps(image_model, caption_model,
+            self.coloc_maps = gen_coloc_maps(self.image_model, self.caption_model,
                                     self.image_tensor, self.caption_glove)
 
         
@@ -57,7 +57,7 @@ class FlickrViz():
         raw_element = fetch_data(index,self.coloc_maps, self.image_tensor, self.ids)
         self.element = flickr_element_processor(raw_element, self.parse_mode, self.data)
 
-        return self.element
+        return {'element':self.element,'score':element_score(self.element)}
 
     def __call__(self, save_flag=False, seg_flag=False, thresh=0.5):
         """
@@ -102,7 +102,7 @@ class FlickrViz():
         :return mean(score_list): mean localization score for dataset. 
         """
         score_list = list()
-        for index in np.arange(last):
+        for index in tqdm(np.arange(last)):
             image_tensor, caption_glove, caption, cap_id = self.dataset[index]
             image_tensor = image_tensor.unsqueeze(0)
             caption_glove = caption_glove.unsqueeze(0)
@@ -112,7 +112,9 @@ class FlickrViz():
             element = flickr_element_processor(element, self.parse_mode, self.data)
             score = element_score(element)
             score_list.append(score)
-            print(score, mean(score_list))
+            if not(index % 100):
+                print(index,"--->",score, mean(score_list))
+
 
         return mean(score_list), score_list
 
