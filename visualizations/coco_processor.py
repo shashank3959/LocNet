@@ -1,7 +1,6 @@
 from .visualize_utils import *
 
 from torchvision import transforms
-import json
 import matplotlib.pyplot as plt
 import numpy as np
 from statistics import mean
@@ -12,7 +11,6 @@ from steps.utils import *
 transform = transforms.Compose([transforms.Resize((224, 224)),
                                 transforms.ToTensor(),
                                 transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))])
-
 class COCOViz():
 
     def __init__(self, batch_size, model_path='saved_models/checkpoint.pth.tar',
@@ -61,7 +59,7 @@ class COCOViz():
         bw_img = element['image']['bw']
         mask_list = element['coloc_map']
         caption = element['caption']
-
+        boxes = list()
         plt.imshow(color_img)
         plt.title("Original Image")
         plt.axis("off")
@@ -75,10 +73,10 @@ class COCOViz():
             plt.imsave(save_name_original, color_img)
 
         if seg_flag:
-            seg_viz(mask_list, caption, color_img, thresh, save_flag, save_name_results)
+            seg_viz(mask_list, caption, color_img, boxes, thresh, save_flag, save_name_results)
 
         else:
-            mask_viz(mask_list, caption, bw_img, save_flag, save_name_results)
+            mask_viz(mask_list, caption, bw_img, boxes, save_flag, save_name_results)
 
 
 
