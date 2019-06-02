@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from tqdm import tqdm
 
 from steps.utils import matchmap_generate
@@ -271,19 +272,23 @@ def phrase_detokenizer(caption):
     return new_caption
 
 
-def mask_viz(mask_list, caption, bw_img, save_flag=False, save_name=''):
+def mask_viz(mask_list, caption, bw_img, boxes, save_flag=False, save_name=''):
     """
     Generate heatmap for each entity
     """
     fig = plt.figure(figsize=(100,30), facecolor="white")
     columns = len(mask_list) + 1
     rows = 1
-    for id in range(len(mask_list)):
+    for id in range(len(mask_list)-1):
         cap_phrase = caption[id]
         mask = cv2.resize(mask_list[id], dsize=(224,224))
-        fig.add_subplot(rows, columns, id + 1)
-        plt.imshow(bw_img)
-        plt.imshow(mask, cmap='jet', alpha=0.5)
+        ax = fig.add_subplot(rows, columns, id + 1)
+        ax.imshow(bw_img)
+        ax.imshow(mask, cmap='jet', alpha=0.5)
+        if type(boxes[id]) is list:
+            for box in boxes[id]:
+                rect = patches.Rectangle((box[0], box[1]), (box[2]-box[0]), (box[3]-box[1]), linewidth=10, edgecolor='r', facecolor='none')
+                ax.add_patch(rect)
         plt.title(cap_phrase, fontdict={'fontsize': 70})
         plt.axis('off')
     plt.show()
@@ -292,8 +297,7 @@ def mask_viz(mask_list, caption, bw_img, save_flag=False, save_name=''):
         fig.savefig(save_name)
 
 
-
-def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''):
+def seg_viz(mask_list, caption, color_img, boxes, thresh, save_flag=False, save_name=''):
     """
     Generate localization masks for each entity phrase
     """
@@ -301,14 +305,18 @@ def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''
     columns = len(mask_list) + 1
     rows = 1
 
-    for id in range(len(mask_list)):
+    for id in range(len(mask_list)-1):
         cap_phrase = caption[id]
         mask = cv2.resize(mask_list[id], dsize=(224, 224))
         mask2 = np.where((mask < thresh * np.mean(mask)), 0, 1).astype('uint8')
-        fig.add_subplot(rows, columns, id + 1)
+        ax = fig.add_subplot(rows, columns, id + 1)
         img = color_img * mask2[:, :, np.newaxis]
 
-        plt.imshow(img)
+        ax.imshow(img)
+        if type(boxes[id]) is list:
+            for box in boxes[id]:
+                rect = patches.Rectangle((box[0], box[1]), (box[2]-box[0]), (box[3]-box[1]), linewidth=10, edgecolor='r', facecolor='none')
+                ax.add_patch(rect)
         plt.title(cap_phrase, fontdict={'fontsize': 70})
         plt.axis('off')
 

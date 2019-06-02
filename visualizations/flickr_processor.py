@@ -59,7 +59,7 @@ class FlickrViz():
 
         return {'element':self.element,'score':element_score(self.element)}
 
-    def __call__(self, save_flag=False, seg_flag=False, thresh=0.5):
+    def __call__(self, save_flag=False, seg_flag=False, thresh=0.5,name=''):
         """
         When called, the instance will generate heat maps for the given image and entities.
         :param save_flag: to save results as jpg files or not
@@ -73,6 +73,7 @@ class FlickrViz():
 
         mask_list = element['coloc_map']
         caption = phrase_detokenizer(element['caption'])
+        boxes = flickr_box_converter(element['boxes'], element['image_size'])
 
         plt.imshow(color_img)
         plt.title("Original Image")
@@ -82,15 +83,15 @@ class FlickrViz():
         save_name_results = ''
 
         if save_flag:
-            save_name_original = element['name'] + '_original.png'
-            save_name_results = element['name'] + '_results.png'
+            save_name_original = 'result_images/'+name+element['name'] + '_original.png'
+            save_name_results = 'result_images/'+name+element['name'] + '_results.png'
             plt.imsave(save_name_original, color_img)
 
         if seg_flag:
-            seg_viz(mask_list, caption, color_img, thresh, save_flag, save_name_results)
+            seg_viz(mask_list, caption, color_img, boxes, thresh, save_flag, save_name_results)
 
         else:
-            mask_viz(mask_list, caption, bw_img, save_flag, save_name_results)
+            mask_viz(mask_list, caption, bw_img, boxes, save_flag, save_name_results)
 
     def loc_eval(self, last):
         """
