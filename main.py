@@ -77,6 +77,7 @@ parser.add_argument('--dataset', default='flickr', type=str,
 parser.add_argument('--parse_mode', default='phrase', type=str,
                     help='If its the flickr dataset, parsing mode needs to be specified.')
 
+
 def main(args):
     # Parsing command line arguments
     print("========================================================")

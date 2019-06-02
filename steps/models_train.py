@@ -26,10 +26,10 @@ def train(data_loader_train, data_loader_val, image_model, caption_model,
         image_model.train()
         caption_model.train()
         #
-        # indices = data_loader_train.dataset.get_indices()
-        # # Create a batch sampler to retrieve a batch with the sampled indices
-        # new_sampler = data.sampler.SubsetRandomSampler(indices=indices)
-        # data_loader_train.batch_sampler.sampler = new_sampler
+        indices = data_loader_train.dataset.get_indices()
+        # Create a batch sampler to retrieve a batch with the sampled indices
+        new_sampler = data.sampler.SubsetRandomSampler(indices=indices)
+        data_loader_train.batch_sampler.sampler = new_sampler
 
         # Obtain the batch
         for batch in data_loader_train:
@@ -102,9 +102,9 @@ def validate(caption_model, image_model, data_loader_val, epoch,
 
     total_val_steps = 10
     for i_step_val in range(1, total_val_steps+1):
-        # indices = data_loader_val.dataset.get_indices()
-        # new_sampler = data.sampler.SubsetRandomSampler(indices=indices)
-        # data_loader_val.batch_sampler.sampler = new_sampler
+        indices = data_loader_val.dataset.get_indices()
+        new_sampler = data.sampler.SubsetRandomSampler(indices=indices)
+        data_loader_val.batch_sampler.sampler = new_sampler
 
         for batch in data_loader_val:
             image_ip_val, caption_glove_ip_val = batch[0], batch[1]

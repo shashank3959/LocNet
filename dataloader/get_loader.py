@@ -1,7 +1,7 @@
 import os
 import torch.utils.data as data
 
-from .coco_loader import CoCoDataset
+from .coco_loader import COCODataset
 from .flickr_loader import FlickrDataset
 
 
@@ -14,9 +14,6 @@ def get_loader_coco(transform,
                     num_workers=4,
                     cocoapi_loc="",
                     vocab_glove_file="data/mscoco/vocab_glove.json",
-                    fetch_mode='default',
-                    data_mode='default',
-                    disp_mode='default',
                     test_size=1000,
                     pad_caption=True):
     """Return the data loader.
@@ -54,19 +51,17 @@ def get_loader_coco(transform,
         annotations_file = os.path.join(cocoapi_loc, "data/mscoco/annotations/image_info_test2014.json")
 
     # COCO caption dataset
-    dataset = CoCoDataset(transform=transform,
+    dataset = COCODataset(transform=transform,
                           mode=mode,
                           batch_size=batch_size,
-                          start_word=start_word,
-                          end_word=end_word,
-                          unk_word=unk_word,
                           annotations_file=annotations_file,
                           vocab_glove_file=vocab_glove_file,
                           img_folder=img_folder,
-                          fetch_mode=fetch_mode,
-                          data_mode=data_mode,
-                          disp_mode=disp_mode,
-                          test_size=1000)
+                          start_word=start_word,
+                          end_word=end_word,
+                          unk_word=unk_word,
+                          pad_caption=True,
+                          pad_limit=20)
 
     if dataset.pad_caption:
         # Randomly sample a caption length, and sample indices with that length.
@@ -86,6 +81,7 @@ def get_loader_coco(transform,
                                       num_workers=num_workers)
 
     return data_loader
+
 
 def get_loader_flickr(transform,
                       mode="train",
