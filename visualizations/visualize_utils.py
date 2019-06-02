@@ -305,8 +305,6 @@ def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''
         cap_phrase = caption[id]
         mask = cv2.resize(mask_list[id], dsize=(224, 224))
         mask2 = np.where((mask < thresh * np.mean(mask)), 0, 1).astype('uint8')
-        ind = np.unravel_index(np.argmax(mask, axis=None), mask.shape)
-        cap_phrase = cap_phrase + str(ind)
         fig.add_subplot(rows, columns, id + 1)
         img = color_img * mask2[:, :, np.newaxis]
 
@@ -315,7 +313,6 @@ def seg_viz(mask_list, caption, color_img, thresh, save_flag=False, save_name=''
         plt.axis('off')
 
     plt.show()
-    print(img.shape)
 
     if save_flag:
         fig.savefig(save_name)
