@@ -48,4 +48,34 @@ rm images/val2014.zip
 unzip annotations_trainval2014.zip
 rm annotations_trainval2014.zip
 
-cd ../..
+cd ..
+
+mkdir visual_genome
+cd visual_genome
+
+wget https://cs.stanford.edu/people/rak248/VG_100K_2/images.zip
+wget https://cs.stanford.edu/people/rak248/VG_100K_2/images2.zip
+wget https://visualgenome.org/static/data/dataset/image_data.json.zip
+wget https://visualgenome.org/static/data/dataset/region_descriptions.json.zip
+
+unzip images.zip
+unzip images2.zip
+unzip image_data.json.zip
+unzip region_descriptions.json.zip
+
+mkdir images
+mv VG_100K_2/* images/
+mv VGG_100K/* images/
+
+rm -r VGG_100K/
+rm -r VGG_100K_2/
+rm image_data.json.zip
+rm region_descriptions.json.zip
+rm images.zip
+rm images2.zip
+
+cd ..
+
+
+
+
