@@ -9,6 +9,7 @@ import math
 
 from dataloader import get_loader_coco
 from dataloader import get_loader_flickr
+from dataloader import get_loader_genome
 
 from steps import *
 from steps.models_train import *
@@ -110,8 +111,8 @@ def main(args):
                              (0.229, 0.224, 0.225))])
 
     # Obtain the data loader (from file). Note that it runs much faster than before!
+    print("Dataset being used: ", args.dataset)
     if args.dataset == 'flickr':
-        print("Dataset being used: ", args.dataset)
         data_loader_train = get_loader_flickr(transform=transform,
                                             mode='train',
                                             batch_size=args.batch_size,
@@ -122,8 +123,7 @@ def main(args):
                                           batch_size=args.batch_size,
                                           parse_mode=args.parse_mode)
 
-    else:
-        print("Dataset being used: ", args.dataset)
+    elif args.dataset == 'coco':
         data_loader_train = get_loader_coco(transform=transform,
                                        mode='train',
                                        batch_size=args.batch_size)
@@ -131,6 +131,14 @@ def main(args):
         data_loader_val = get_loader_coco(transform=transform,
                                      mode='val',
                                      batch_size=args.batch_size)
+    else:
+        data_loader_train = get_loader_genome(transform=transform,
+                                              mode='train',
+                                              batch_size=args.batch_size)
+
+        data_loader_val = get_loader_genome(transform=transform,
+                                            mode='train',
+                                            batch_size=args.batch_size)
 
     # Load saved model
     start_epoch, best_loss = load_checkpoint(image_model, caption_model, args.resume)
@@ -156,7 +164,7 @@ def main(args):
     best_epoch = start_epoch
 
     # while (epoch - best_epoch) < args.no_gain_stop and (epoch <= args.n_epochs):
-    while epoch <= args.n_epochs :
+    while epoch <= args.n_epochs:
         adjust_learning_rate(args.lr, args.lr_decay, optimizer, epoch)
         print("========================================================")
         print("Epoch: %d Training starting" % epoch)
