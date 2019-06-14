@@ -3,7 +3,7 @@ import torch.utils.data as data
 
 from .coco_loader import COCODataset
 from .flickr_loader import FlickrDataset
-
+from .genome_loader import VisualGenome
 
 def get_loader_coco(transform,
                     mode="train",
@@ -152,5 +152,54 @@ def get_loader_flickr(transform,
                                       batch_size=dataset.batch_size,
                                       shuffle=True,
                                       num_workers=num_workers)
+
+    return data_loader
+
+
+def get_loader_genome(transform,
+                      mode="train",
+                      batch_size=1,
+                      start_word="<start>",
+                      end_word="<end>",
+                      unk_word="<unk>",
+                      num_workers=1,
+                      genome_loc="",
+                      vocab_glove_file="data/visual_genome/vocab_glove.json",
+                      pad_caption=True,
+                      pad_limit=20):
+  
+    image_root = os.path.join(genome_loc,'data','visual_genome', 'images')
+    annotations_file = os.path.join(genome_loc, 'data','visual_genome', 'coco_phrase_data.json')
+    vocab_glove_file = os.path.join(genome_loc, 'data', 'visual_genome', 'vocab_glove.json')
+
+    dataset = VisualGenome(transform=transform, 
+                           mode='train', 
+                           batch_size=batch_size,
+                           annotations_file=annotations_file,
+                           img_folder=image_root,
+                           vocab_glove_file=vocab_glove_file,
+                           start_word=start_word,
+                           end_word=end_word,
+                           unk_word=unk_word,
+                           pad_caption=pad_caption,
+                           pad_limit=pad_limit)
+
+    if dataset.pad_caption:
+        # Randomly sample a caption length, and sample indices with that length.
+        indices = dataset.get_indices()
+        # Create and assign a batch sampler to retrieve a batch with the sampled indices.
+        initial_sampler = data.sampler.SubsetRandomSampler(indices=indices)
+        # data loader for COCO dataset.
+        data_loader = data.DataLoader(dataset=dataset,
+                                      num_workers=num_workers,
+                                      batch_sampler=data.sampler.BatchSampler(sampler=initial_sampler,
+                                                                              batch_size=dataset.batch_size,
+                                                                              drop_last=False))
+
+    else:
+        data_loader = data.DataLoader(dataset=dataset,
+                                      batch_size=dataset.batch_size,
+                                      shuffle=True,
+                                      num_workers = num_workers)
 
     return data_loader
