@@ -28,7 +28,7 @@ def genome_load_data(batch_size, transform, mode='train'):
     return image_tensor, caption_glove, ann_id
 
 
-def get_models(model_path):
+def get_models_genome(model_path):
     '''
     Load pre-trained model
     :return: pretrained image and caption model
@@ -69,6 +69,7 @@ def gen_coloc_maps_matchmap(image_model, caption_model,
 
     return coloc_maps
 
+
 def gen_coloc_maps_phrase(image_model, caption_model,
                    image_tensor, caption_glove):
     """
@@ -95,14 +96,14 @@ def gen_coloc_maps_phrase(image_model, caption_model,
     return coloc_maps
 
 
-def rgb2gray(rgb):
+def rgb2gray_genome(rgb):
     """
     Convert color numpy image to grayscale
     """
     return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
 
 
-def tensor2img(tensor_image):
+def tensor2img_genome(tensor_image):
     """
     Convert each tensor image to numpy image
     :return image: Dictionary of two elements
@@ -111,7 +112,7 @@ def tensor2img(tensor_image):
     """
     img = tensor_image.permute(1, 2, 0)
     color_img = img.numpy()
-    bw_img = rgb2gray(color_img)
+    bw_img = rgb2gray_genome(color_img)
     color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
     image = {"color": color_img, "bw": bw_img}
 
@@ -160,7 +161,7 @@ def genome_coloc_processor(coloc_map):
     return mask
 
 
-def fetch_data(index, coloc_maps, image_tensor, ann_ids):
+def fetch_data_genome(index, coloc_maps, image_tensor, ann_ids):
     """
     Parse all necessary data from a batch based on index into a dictionary
     :return element: Dictionary containing three items:
@@ -188,13 +189,11 @@ def genome_element_processor(element, image_data, caption_data):
     
     # Process Bboxes
     bboxes = caption_data[caption_id]['bbox']
-    print(bboxes)
-    print(caption_id)
     image_size = [image_data[image_id]['height'], image_data[image_id]['width']]
     new_bboxes = bbox_processor(bboxes, image_size)
 
     # Process image
-    new_image = tensor2img(element['image'])
+    new_image = tensor2img_genome(element['image'])
 
     # Process co-localization map
     new_coloc = genome_coloc_processor(element['coloc_map'])
@@ -209,15 +208,83 @@ def genome_element_processor(element, image_data, caption_data):
     return processed_elem
 
 
-def find_mask_max(mask):
+def find_mask_max_genome(element):
     """
     Find the coordinates of the maximum point in each mask
     :param mask_list: list of co localization masks
     :return coords_max: list of tuples. Each tuple is max_coordinate
     """
-    coords_max = list()
-    for id in range(len(mask_list)):
-        mask = cv2.resize(mask_list[id], dsize=(224, 224))
-        ind = np.unravel_index(np.argmax(mask, axis=None), mask.shape)
-        coords_max.append(ind)
-    return coords_max
+    mask = element['coloc_map']
+    mask = element['coloc_map']
+    ind = np.unravel_index(np.argmax(mask, axis=None), mask.shape)
+    return list(ind)
+
+
+def hit_score_genome(element):
+    """
+    Return 1/0 depending on whether max point is in bounding box
+    """
+    mask_pt = find_mask_max_genome(element)
+    coord = element['bboxes']
+    return int(coord[0] <= mask_pt[0] <= coord[2]) and (coord[1] <= mask_pt[1] <= coord[3])
+
+
+def mask_viz_genome(element, save_flag=False, save_name=''):
+    """
+    Visualize attention masks over image
+    """
+    fig = plt.figure(figsize=(50,100), facecolor='white')
+    caption_phrase = element['caption']
+    col_image = element['image']['color']
+    bw_image = element['image']['bw']
+    mask = cv2.resize(element['coloc_map'], dsize=(224,224))
+    box = element['bboxes']
+
+    ax1 = fig.add_subplot(121)
+    ax1.imshow(col_image)
+
+    ax2 = fig.add_subplot(122)
+    ax2.imshow(bw_image)
+    ax2.imshow(mask, cmap='jet', alpha=0.5)
+    rect = patches.Rectangle((box[0], box[1]), (box[2]-box[0]), (box[3]-box[1]), linewidth=10, edgecolor='r', facecolor='none')
+    ax2.add_patch(rect)
+
+    plt.title(caption_phrase, fontdict={'fontsize': 70})
+    plt.axis('off')
+
+    plt.show()
+
+    if save_flag:
+        fig.savefig(save_name)
+
+
+def seg_viz_genome(element, thresh=0.5, save_flag=False, save_name=''):
+    """
+    Visualize segmentation masks
+    """
+    fig = plt.figure(figsize=(50,100), facecolor='white')
+    caption_phrase = element['caption']
+    col_image = element['image']['color']
+    # bw_image = element['image']['bw']
+    mask = cv2.resize(element['coloc_map'], dsize=(224,224))
+    mask2 = np.where((mask<thresh*np.mean(mask)), 0, 1).astype('uint8')
+    img = col_image * mask2[:,:,np.newaxis]
+    box = element['bboxes']
+
+    ax1 = fig.add_subplot(121)
+    ax1.imshow(col_image)
+
+    ax2 = fig.add_subplot(122)
+    ax2.imshow(img)
+    rect = patches.Rectangle((box[0], box[1]), (box[2]-box[0]), (box[3]-box[1]), linewidth=10, edgecolor='r', facecolor='none')
+    ax2.add_patch(rect)
+
+    plt.title(caption_phrase, fontdict={'fontsize': 70})
+    plt.axis('off')
+
+    plt.show()
+
+    if save_flag:
+        fig.savefig(save_name)
+
+
