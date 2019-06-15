@@ -25,7 +25,7 @@ def genome_load_data(batch_size, transform, mode='train'):
     for batch in genome_loader:
         (image_tensor, caption_glove, ann_id) = batch
 
-    return image_tensor, caption_glove, ann_id
+    return genome_loader, image_tensor, caption_glove, ann_id
 
 
 def get_models_genome(model_path):
