@@ -118,21 +118,27 @@ def tensor2img(tensor_image):
     return image
 
 
-def bbox_processor(bboxes, image_size):
+def bbox_processor(bbox, image_size):
     """
     Adjust bounding box to have compatible dimensions
     """
-    bboxes[2] += bboxes[0]
-    bboxes[3] += bboxes[1]
+    x1 = bbox[0]
+    x2 = bbox[2] + bbox[0]
+
+    y1 = bbox[1]
+    y2 = bbox[1] + bbox[3]
+
+    im_ht = image_size[0]
+    im_wt = image_size[1]
 
     new_box = list()
-    hf = 224/image_size[0]
-    wf = 224/image_size[1]
+    hf = 224/im_ht
+    wf = 224/im_wt
 
-    new_box.append(bboxes[0] * wf)
-    new_box.append(bboxes[1] * hf)
-    new_box.append(bboxes[2] * wf)
-    new_box.append(bboxes[3] * hf)
+    new_box.append(x1 * wf)
+    new_box.append(y1 * hf)
+    new_box.append(x2 * wf)
+    new_box.append(y2 * hf)
 
     return new_box
 
@@ -185,9 +191,7 @@ def genome_element_processor(element, image_data, caption_data):
     print(bboxes)
     print(caption_id)
     image_size = [image_data[image_id]['height'], image_data[image_id]['width']]
-    print(image_size)
     new_bboxes = bbox_processor(bboxes, image_size)
-    print(new_bboxes)
 
     # Process image
     new_image = tensor2img(element['image'])
