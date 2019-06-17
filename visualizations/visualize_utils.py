@@ -33,6 +33,17 @@ def caption_list_gen(caption):
     return caption_list
 
 
+def genome_load_data(batch_size, transform, mode='train'):
+    genome_loader = get_loader_genome(transform=transform,
+                                      mode='train',
+                                      batch_size=batch_size)
+
+    for batch in genome_loader:
+        (image_tensor, caption_glove, ann_id) = batch
+
+    return image_tensor, caption_glove, ann_id
+
+
 def coco_load_data(batch_size, transform, mode='val'):
     """
     Loads data from the coco dataset using fold mode
@@ -41,7 +52,7 @@ def coco_load_data(batch_size, transform, mode='val'):
     coco_loader = get_loader_coco(transform=transform,
                                   mode='val',
                                   batch_size=batch_size)
-    for batch in cococ_loader:
+    for batch in coco_loader:
         image_tensor, caption_glove, captions = batch[0], batch[2], batch[3]
     caption_list = caption_list_modify(captions)
 
