@@ -17,7 +17,7 @@ sys.path.append(path_to_dataloader)
 from dataloader import *
 
 
-def caption_list_gen(caption):
+def caption_list_modify(caption):
     """
     Due to the parsing done by pytorch's dataloader, captions generated there
     is a list of positional tuples. This function creates a list of tokenized captions.
@@ -53,7 +53,7 @@ def coco_load_data(batch_size, transform, mode='val'):
                                   mode='val',
                                   batch_size=batch_size)
     for batch in coco_loader:
-        image_tensor, caption_glove, captions = batch[0], batch[2], batch[3]
+        image_tensor, caption_glove, captions = batch[0], batch[1], batch[2]
     caption_list = caption_list_modify(captions)
 
     return image_tensor, caption_glove, caption_list
@@ -243,15 +243,16 @@ def coco_element_processor(element):
     Processed image has been converted to np images ready to be plotted
     """
     caption = element['caption']
-    coloc_map = element['coloc_map']
-    start = caption.index('<end>')
-    del [caption[start:]]
-    del [coloc_map[start:]]
-    del [caption[0]]
-    del [coloc_map[0]]
+    print(caption)
+    coloc_map = list(element['coloc_map'])
+    # start = caption.index('<start>')
+    # del [caption[start:]]
+    # del [coloc_map[start:]]
+    # del [caption[0]]
+    # del [coloc_map[0]]
 
     coloc_map = coloc_map_processor(coloc_map)
-
+    print(len(coloc_map))
     element['coloc_map'] = coloc_map
     element['caption'] = caption
     element['image'] = tensor2img(element['image'])

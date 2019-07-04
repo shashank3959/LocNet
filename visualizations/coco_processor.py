@@ -30,7 +30,7 @@ class COCOViz():
                                                                              self.transform,
                                                                              self.mode)
 
-        self.coloc_maps = gen_matchmap(self.image_model, self.caption_model,
+        self.coloc_maps = gen_coloc_maps(self.image_model, self.caption_model,
                                            self.image_tensor, self.caption_glove)
 
     def __getitem__(self, index):
@@ -60,6 +60,7 @@ class COCOViz():
         mask_list = element['coloc_map']
         caption = element['caption']
         boxes = list()
+        ing = imshow("owke")
         plt.imshow(color_img)
         plt.title("Original Image")
         plt.axis("off")
