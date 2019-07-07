@@ -47,7 +47,7 @@ data
 - Run download_data.sh 
 - ``` cd 'data/flickr30k_entities'```
 - ``` python flickr_data_shuffler.py```
-- ``` python flickr_vocab_gen.py```
+- ``` python flickr_vocab_gen.py``` (Before running this, make sure you have glove.6B.300d.txt from http://nlp.stanford.edu/data/glove.6B.zip in the data/flickr_30kentities folder)
 - ``` python flickr_caption_parser.py```
     - This can be used with required arguments. 
     - mk: decide to create a data.json file out of the parsed captions. If not 'make' then script just prints the json data.
