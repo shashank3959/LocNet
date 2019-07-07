@@ -14,6 +14,7 @@ dict_models = {'none':'',
         'f_30':'saved_models/flickr_30epochs.tar',
         'f_100':'saved_models/flickr_100epochs.tar',
         'c_70': 'saved_models/coco_70epochs.tar',
+        'triplet':'saved_models/flickr_triplet.tar',
         'mix': 'saved_models/mix_140epochs.tar',
         'mix2': 'saved_models/coco_genome.tar'}
 
