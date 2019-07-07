@@ -24,9 +24,9 @@ if __name__ == '__main__':
 
     for fold in fold_files:
 
-        os.mkdir(os.path.join(img_folder, fold))
-        os.mkdir(os.path.join(sent_folder, fold))
-        os.mkdir(os.path.join(ann_folder, fold))
+        os.makedirs(os.path.join(img_folder, fold), exist_ok=True)
+        os.makedirs(os.path.join(sent_folder, fold), exist_ok=True)
+        os.makedirs(os.path.join(ann_folder, fold), exist_ok=True)
 
         print("Now doing fold: ", fold)
         with open(fold_files[fold], encoding='utf-8', mode='r') as f:
