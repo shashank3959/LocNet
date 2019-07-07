@@ -7,9 +7,9 @@ cd flickr_30kentities
 
 wget http://shannon.cs.illinois.edu/DenotationGraph/data/flickr30k-images.tar
 wget https://github.com/BryanPlummer/flickr30k_entities/raw/master/annotations.zip
-wget https://github.com/BryanPlummer/flickr30k_entities/blob/master/train.txt
-wget https://github.com/BryanPlummer/flickr30k_entities/blob/master/test.txt
-wget https://github.com/BryanPlummer/flickr30k_entities/blob/master/val.txt
+wget https://raw.githubusercontent.com/BryanPlummer/flickr30k_entities/master/train.txt
+wget https://raw.githubusercontent.com/BryanPlummer/flickr30k_entities/master/test.txt
+wget https://raw.githubusercontent.com/BryanPlummer/flickr30k_entities/master/val.txt
 wget http://shannon.cs.illinois.edu/DenotationGraph/data/flickr30k.tar.gz
 
 
