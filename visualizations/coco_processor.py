@@ -30,7 +30,7 @@ class COCOViz():
                                                                              self.transform,
                                                                              self.mode)
 
-        self.coloc_maps = gen_coloc_maps(self.image_model, self.caption_model,
+        self.coloc_maps, self.vgg_op = gen_coloc_maps(self.image_model, self.caption_model,
                                            self.image_tensor, self.caption_glove)
 
     def __getitem__(self, index):
@@ -41,7 +41,7 @@ class COCOViz():
         used to evaluate and visualize the localization tasks being performed by the system.
         """
 
-        element = fetch_data(index, self.coloc_maps, self.image_tensor, self.caption)
+        element = fetch_data(index, self.coloc_maps, self.vgg_op, self.image_tensor, self.caption)
         self.element = coco_element_processor(element)
 
         return self.element
@@ -57,13 +57,21 @@ class COCOViz():
         color_img = element['image']['color']
         color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
         bw_img = element['image']['bw']
+        vgg_mask = element['vgg_op']
         mask_list = element['coloc_map']
         caption = element['caption']
         boxes = list()
-        ing = imshow("owke")
+
+        plt.subplot(121)
         plt.imshow(color_img)
         plt.title("Original Image")
         plt.axis("off")
+
+        plt.subplot(122)
+        plt.imshow(bw_img)
+        plt.imshow(vgg_mask, cmap='jet', alpha=0.5)
+        plt.axis('off')
+        plt.title("VGG19 Averaged Heatmap")
         plt.show()
 
         save_name_results = ''
@@ -74,10 +82,10 @@ class COCOViz():
             plt.imsave(save_name_original, color_img)
 
         if seg_flag:
-            seg_viz(mask_list, caption, color_img, boxes, thresh, save_flag, save_name_results)
+            seg_viz_coco(mask_list, caption, color_img, thresh, save_flag, save_name_results)
 
         else:
-            mask_viz(mask_list, caption, bw_img, boxes, save_flag, save_name_results)
+            mask_viz_coco(mask_list, caption, bw_img, save_flag, save_name_results)
 
 
 
