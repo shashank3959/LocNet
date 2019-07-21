@@ -116,9 +116,9 @@ class FlickrViz():
             image_tensor, caption_glove, caption, cap_id = self.dataset[index]
             image_tensor = image_tensor.unsqueeze(0)
             caption_glove = caption_glove.unsqueeze(0)
-            co_loc_map = gen_coloc_maps(self.image_model, self.caption_model,
+            co_loc_map, vgg_op = gen_coloc_maps(self.image_model, self.caption_model,
                                         image_tensor, caption_glove)
-            element = fetch_data_mod(0, co_loc_map, image_tensor, cap_id)
+            element = fetch_data(0, co_loc_map, vgg_op, image_tensor, cap_id)
             element = flickr_element_processor(element, self.parse_mode, self.data)
             score = element_score(element)
             score_list.append(score)

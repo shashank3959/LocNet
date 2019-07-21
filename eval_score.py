@@ -30,7 +30,7 @@ args = parser.parse_args()
 model_path = dict_models[args.model_path]
 
 if args.dataset=='flickr':
-    flickr_processor = FlickrViz(batch_size = 1, parse_mode=args.parse_mode, model_path=model_path, eval_mode=True)
+    flickr_processor = FlickrViz(batch_size=20, parse_mode=args.parse_mode, model_path=model_path, eval_mode=True)
     length_dataset = len(flickr_processor.dataset)
 
     score, score_list = flickr_processor.loc_eval(length_dataset)
