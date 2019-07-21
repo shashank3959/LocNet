@@ -37,7 +37,7 @@ def gen_vocabulary(annotations):
             all_words.extend(caption.split(' '))
 
     all_words = list(set(all_words))
-    vocab = [word.lower() for word in all_words]
+    vocabulary = [word.lower() for word in all_words]
     vocabulary.extend(["<start>","<end>","<unk>"])
     print('Total Words found: ', len(all_words))
     print('Vocabulary length: ', len(vocabulary))
