@@ -118,6 +118,23 @@ def gen_coloc_maps(image_model, caption_model,
 
     return coloc_maps, vgg_op
 
+def fetch_data_mod(index, coloc_maps, image_tensor, cap_id):
+    """
+    Parse all necessary data based on index into a dictionary
+    :return element: Dictionary containing three items:
+    1. image tensor at index-th index
+    2. caption/Caption ID depending on dataset being used
+    3. coloc_map: untrimmed co_loc map at index position.
+    """
+    element = dict()
+    element['coloc_map'] = coloc_maps[index]
+    element['image'] = image_tensor[index]
+    # element['caption'] = captions[index] # In case of flickr, AnnID
+    element['name'] = str(index)
+    # element['vgg_op'] = vgg_op[index]
+
+    return element
+
 
 def fetch_data(index, coloc_maps, vgg_op, image_tensor, captions):
     """
