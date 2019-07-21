@@ -18,13 +18,13 @@ dict_models = {'none':'',
         'mix': 'saved_models/mix_140epochs.tar',
         'mix2': 'saved_models/coco_genome.tar'}
 
-image_data_file = 'data/visual_genome/coco_image_data.json'
-annotations_file = 'data/visual_genome/coco_phrase_data.json'
+# image_data_file = 'data/visual_genome/coco_image_data.json'
+# annotations_file = 'data/visual_genome/coco_phrase_data.json'
 
-print("Loading Annotations...")
-image_data = json.load(open(image_data_file, encoding='utf-8', mode='r'))
-annotations_data = json.load(open(annotations_file, encoding='utf-8', mode='r'))
-print("Annotations loaded!")
+# print("Loading Annotations...")
+# image_data = json.load(open(image_data_file, encoding='utf-8', mode='r'))
+# annotations_data = json.load(open(annotations_file, encoding='utf-8', mode='r'))
+# print("Annotations loaded!")
 args = parser.parse_args()
 
 model_path = dict_models[args.model_path]
