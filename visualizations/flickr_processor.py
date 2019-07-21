@@ -41,7 +41,7 @@ class FlickrViz():
             self.image_tensor, self.caption_glove, self.ids = flickr_load_data(self.batch_size,
                                                                            self.parse_mode,
                                                                            self.transform)
-            self.coloc_maps = gen_coloc_maps(self.image_model, self.caption_model,
+            self.coloc_maps, self.vgg_op = gen_coloc_maps(self.image_model, self.caption_model,
                                     self.image_tensor, self.caption_glove)
 
         
@@ -54,7 +54,7 @@ class FlickrViz():
         Can only be used when eval_mode is False.
         """
         assert not self.eval_mode, "Evaluation mode has to be False"
-        raw_element = fetch_data(index,self.coloc_maps, self.image_tensor, self.ids)
+        raw_element = fetch_data(index,self.coloc_maps, self.vgg_op, self.image_tensor, self.ids)
         self.element = flickr_element_processor(raw_element, self.parse_mode, self.data)
 
         return {'element':self.element,'score':element_score(self.element)}
@@ -70,16 +70,25 @@ class FlickrViz():
         color_img = element['image']['color']
         color_img = (color_img - np.amin(color_img)) / np.ptp(color_img)
         bw_img = element['image']['bw']
+        vgg_mask = element['vgg_op']
 
         mask_list = element['coloc_map']
         caption = phrase_detokenizer(element['caption'])
         boxes = flickr_box_converter(element['boxes'], element['image_size'])
 
+        plt.subplot(121)
         plt.imshow(color_img)
         plt.title("Original Image")
         plt.axis("off")
+
+        plt.subplot(122)
+        plt.imshow(bw_img)
+        plt.imshow(vgg_mask, cmap='jet', alpha=0.5)
+        plt.axis('off')
+        plt.title("VGG19 Averaged Heatmap")
         plt.show()
 
+        
         save_name_results = ''
 
         if save_flag:

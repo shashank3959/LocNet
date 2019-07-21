@@ -109,16 +109,17 @@ def gen_coloc_maps(image_model, caption_model,
     caption_op = caption_model(caption_glove)
     batch_size = image_tensor.size(0)
     coloc_maps = list()
+    vgg_op = image_op.mean(1)       # Mean across depth dimension
 
     for i in np.arange(batch_size):
         coloc = matchmap_generate(image_op[i], caption_op[i])
         mm = coloc.detach().numpy()
         coloc_maps.append(mm)
 
-    return coloc_maps
+    return coloc_maps, vgg_op
 
 
-def fetch_data(index, coloc_maps, image_tensor, captions):
+def fetch_data(index, coloc_maps, vgg_op, image_tensor, captions):
     """
     Parse all necessary data based on index into a dictionary
     :return element: Dictionary containing three items:
@@ -131,6 +132,7 @@ def fetch_data(index, coloc_maps, image_tensor, captions):
     element['image'] = image_tensor[index]
     element['caption'] = captions[index] # In case of flickr, AnnID
     element['name'] = str(index)
+    element['vgg_op'] = vgg_op[index]
 
     return element
 
@@ -155,6 +157,15 @@ def tensor2img(tensor_image):
     image = {"color": color_img, "bw": bw_img}
 
     return image
+
+def vgg_op_processor(vgg_op):
+    """
+    Convert each vgg_op to a mask
+    """
+    mask = vgg_op.detach().numpy()
+    mask = cv2.resize(mask, dsize=(224,224))
+
+    return mask
 
 
 def coloc_map_processor(coloc_map):
@@ -232,6 +243,9 @@ def flickr_element_processor(element, parse_mode, data):
     element['boxes'] = bboxes
     element['image_size'] = image_size
 
+    vgg_op = element['vgg_op']
+    element['vgg_op'] = vgg_op_processor(vgg_op)
+    
     return element
 
 
@@ -243,18 +257,16 @@ def coco_element_processor(element):
     Processed image has been converted to np images ready to be plotted
     """
     caption = element['caption']
-    print(caption)
-    coloc_map = list(element['coloc_map'])
-    # start = caption.index('<start>')
-    # del [caption[start:]]
-    # del [coloc_map[start:]]
-    # del [caption[0]]
-    # del [coloc_map[0]]
 
+    coloc_map = list(element['coloc_map'])
     coloc_map = coloc_map_processor(coloc_map)
-    print(len(coloc_map))
     element['coloc_map'] = coloc_map
+
+    vgg_op = element['vgg_op']
+    element['vgg_op'] = vgg_op_processor(vgg_op)
+
     element['caption'] = caption
+
     element['image'] = tensor2img(element['image'])
 
     return element
@@ -309,6 +321,28 @@ def mask_viz(mask_list, caption, bw_img, boxes, save_flag=False, save_name=''):
         fig.savefig(save_name)
 
 
+def mask_viz_coco(mask_list, caption, bw_img, save_flag=False, save_name=''):
+    """
+    Generate heatmap for each entity
+    """
+    fig = plt.figure(figsize=(100,30), facecolor="white")
+    columns = len(mask_list) + 1
+    rows = 1
+    for id in range(len(mask_list)-1):
+        cap_phrase = caption[id]
+        mask = cv2.resize(mask_list[id], dsize=(224,224))
+        if not cap_phrase in ['<start>','<end>',',','.','<unk>']:
+            fig.add_subplot(rows, columns, id + 1)
+            plt.imshow(bw_img)
+            plt.imshow(mask, cmap='jet', alpha=0.5)
+            plt.title(cap_phrase, fontdict={'fontsize': 25})
+            plt.axis('off')
+    plt.show()
+
+    if save_flag:
+        fig.savefig(save_name)
+
+
 def seg_viz(mask_list, caption, color_img, boxes, thresh, save_flag=False, save_name=''):
     """
     Generate localization masks for each entity phrase
@@ -331,6 +365,32 @@ def seg_viz(mask_list, caption, color_img, boxes, thresh, save_flag=False, save_
                 ax.add_patch(rect)
         plt.title(cap_phrase, fontdict={'fontsize': 70})
         plt.axis('off')
+
+    plt.show()
+
+    if save_flag:
+        fig.savefig(save_name)
+
+
+def seg_viz_coco(mask_list, caption, color_img, thresh, save_flag=False, save_name=''):
+    """
+    Generate localization masks for each entity phrase
+    """
+    fig = plt.figure(figsize=(100,30), facecolor="white")
+    columns = len(mask_list) + 1
+    rows = 1
+
+    for id in range(len(mask_list)-1):
+        cap_phrase = caption[id]
+        mask = cv2.resize(mask_list[id], dsize=(224, 224))
+        mask2 = np.where((mask < thresh * np.mean(mask)), 0, 1).astype('uint8')
+        # ax = 
+        if not cap_phrase in ['<start>', '<end>',',','.','<unk>']:
+            fig.add_subplot(rows, columns, id + 1)
+            img = color_img * mask2[:, :, np.newaxis]
+            plt.imshow(img)
+            plt.title(cap_phrase, fontdict={'fontsize': 25})
+            plt.axis('off')
 
     plt.show()
 
